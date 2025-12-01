@@ -1,5 +1,12 @@
 import { Button } from '@/components/ui/button';
-import { Briefcase, MapPin, Search, ChevronDown, User } from 'lucide-react';
+import {
+  Briefcase,
+  MapPin,
+  Search,
+  Building,
+  User,
+  Plus,
+} from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
@@ -41,7 +48,9 @@ export default function LandingPage() {
           <div className="flex items-center justify-between h-20">
             <Link href="/" className="flex items-center gap-2">
               <Briefcase className="h-8 w-8 text-primary" />
-              <span className="font-bold text-2xl text-gray-900">JobGenie</span>
+              <span className="font-bold text-2xl text-gray-900">
+                JobGenie
+              </span>
             </Link>
             <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
               <Link
@@ -99,7 +108,7 @@ export default function LandingPage() {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                     <Input
                       type="text"
-                      placeholder="Job tittle, Keyword..."
+                      placeholder="Job title, Keyword..."
                       className="pl-10 h-12 border-none focus-visible:ring-0"
                     />
                   </div>
@@ -125,7 +134,7 @@ export default function LandingPage() {
             </div>
             <div className="hidden md:block">
               <Image
-                src="https://picsum.photos/seed/job-search/600/500"
+                src="https://images.unsplash.com/photo-1542744095-291d1f67b221?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 alt="Illustration of a person planning their career path"
                 width={600}
                 height={500}
@@ -148,8 +157,8 @@ export default function LandingPage() {
             }}
           >
             <CarouselContent>
-              {carouselImages.map((image, index) => (
-                <CarouselItem key={index}>
+              {carouselImages.map((image) => (
+                <CarouselItem key={image.id}>
                   <div className="p-1">
                     <Card>
                       <CardContent className="flex aspect-video items-center justify-center p-0 rounded-lg overflow-hidden">
