@@ -23,7 +23,7 @@ export const GenerateResumeInputSchema = z.object({
   experiences: z.array(ExperienceSchema),
   education: z.array(EducationSchema),
   skills: z.string(),
-  template: z.enum(['elegant', 'professional']),
+  template: z.enum(['elegant', 'professional', 'modern']),
 });
 export type GenerateResumeInput = z.infer<typeof GenerateResumeInputSchema>;
 

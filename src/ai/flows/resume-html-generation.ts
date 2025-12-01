@@ -144,6 +144,58 @@ The user has selected the '{{{template}}}' template.
 </div>
 \'\'\'
 
+**IF template is 'modern' USE THIS STRUCTURE:**
+\'\'\'html
+<div id="resume-container" style="font-family: 'Lato', 'Helvetica Neue', Arial, sans-serif; display: flex; width: 210mm; min-height: 297mm; background-color: #fff; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+    <div style="width: 38%; background-color: #2c3e50; color: #ecf0f1; padding: 30px;">
+        <h1 style="font-size: 36px; font-weight: 700; margin: 0; line-height: 1.2;">{{{fullName}}}</h1>
+        
+        <div style="margin-top: 30px;">
+            <h2 style="font-size: 16px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #7f8c8d; padding-bottom: 8px; margin-bottom: 15px;">Contact</h2>
+            <p style="font-size: 14px; margin: 5px 0;">{{{email}}}</p>
+            <p style="font-size: 14px; margin: 5px 0;">{{{phone}}}</p>
+        </div>
+
+        <div style="margin-top: 30px;">
+            <h2 style="font-size: 16px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #7f8c8d; padding-bottom: 8px; margin-bottom: 15px;">Education</h2>
+            {{#each education}}
+            <div style="margin-bottom: 15px;">
+                <h3 style="font-size: 15px; font-weight: bold; margin: 0;">{{this.degree}}</h3>
+                <p style="font-size: 14px; font-style: italic; margin: 2px 0;">{{this.university}}</p>
+                <p style="font-size: 13px; color: #bdc3c7; margin: 2px 0;">{{this.startDate}} - {{this.endDate}}</p>
+            </div>
+            {{/each}}
+        </div>
+
+        <div style="margin-top: 30px;">
+            <h2 style="font-size: 16px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #7f8c8d; padding-bottom: 8px; margin-bottom: 15px;">Skills</h2>
+            <div style="font-size: 14px; white-space: pre-line; line-height: 1.6;">{{{skills}}}</div>
+        </div>
+    </div>
+
+    <div style="width: 62%; padding: 30px; color: #34495e;">
+        <div style="margin-bottom: 30px;">
+            <h2 style="font-size: 20px; text-transform: uppercase; letter-spacing: 2px; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; margin-bottom: 20px;">Summary</h2>
+            <p style="font-size: 15px; line-height: 1.6;">{{{summary}}}</p>
+        </div>
+
+        <div>
+            <h2 style="font-size: 20px; text-transform: uppercase; letter-spacing: 2px; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; margin-bottom: 20px;">Experience</h2>
+            {{#each experiences}}
+            <div style="margin-bottom: 25px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                    <h3 style="font-size: 18px; font-weight: bold; margin: 0; color: #2c3e50;">{{this.jobTitle}}</h3>
+                    <p style="font-size: 13px; font-style: italic; color: #95a5a6; margin:0;">{{this.startDate}} - {{this.endDate}}</p>
+                </div>
+                <p style="font-size: 16px; font-style: italic; color: #7f8c8d; margin: 2px 0 10px 0;">{{this.company}}</p>
+                <div style="font-size: 14px; line-height: 1.6; white-space: pre-line;">{{this.jobDescription}}</div>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</div>
+\'\'\'
+
 Generate the HTML code based *only* on the selected template's structure.
 `,
   config: {
