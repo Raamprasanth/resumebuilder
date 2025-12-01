@@ -44,10 +44,16 @@ import {
   Github,
   Code2,
   Wand2,
+  Badge,
+  Star,
+  Trophy,
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge as UiBadge } from '@/components/ui/badge';
+
 
 const profileSchema = z.object({
   firstName: z.string().min(1, 'First name is required.'),
@@ -146,10 +152,10 @@ export function ProfileClient() {
 
   const handleAnalyze = async () => {
     const links = form.getValues('links');
-    if (!links?.github && !links?.leetCode) {
+    if (!links?.github && !links?.leetCode && !links?.stackOverflow) {
       toast({
         title: 'No Profiles to Analyze',
-        description: 'Please add your GitHub or LeetCode profile links first.',
+        description: 'Please add your GitHub, LeetCode, or Stack Overflow profile links first.',
         variant: 'destructive',
       });
       return;
@@ -161,6 +167,7 @@ export function ProfileClient() {
       const result = await analyzeSocialProfiles({
         githubUrl: links.github,
         leetCodeUrl: links.leetCode,
+        stackOverflowUrl: links.stackOverflow,
       });
       setAnalysisResult(result);
     } catch (error) {
@@ -352,7 +359,7 @@ export function ProfileClient() {
                         <FormItem>
                           <FormLabel>Stack Overflow</FormLabel>
                           <FormControl>
-                            <Input placeholder="https://stackoverflow.com/users/your-id" {...field} />
+                            <Input placeholder="https://stackoverflow.com/users/your-id/your-username" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -396,7 +403,7 @@ export function ProfileClient() {
                     <CardHeader>
                       <CardTitle>AI Profile Analysis</CardTitle>
                       <CardDescription>
-                        Get an AI-powered analysis of your linked GitHub and LeetCode profiles.
+                        Get an AI-powered analysis of your linked GitHub, LeetCode, and Stack Overflow profiles.
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -405,58 +412,115 @@ export function ProfileClient() {
                            <Loader2 className="h-8 w-8 animate-spin text-primary" />
                         </div>
                       ) : analysisResult ? (
-                        <div className="grid md:grid-cols-2 gap-6">
+                        <div className="space-y-6">
                           {analysisResult.github && (
                             <Card>
                               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                <CardTitle className="text-sm font-medium">GitHub Analysis</CardTitle>
-                                <Github className="h-4 w-4 text-muted-foreground" />
+                                <CardTitle className="text-lg font-medium flex items-center gap-2"><Github /> GitHub Analysis</CardTitle>
                               </CardHeader>
-                              <CardContent>
-                                <div className="text-2xl font-bold">{analysisResult.github.repositories}</div>
-                                <p className="text-xs text-muted-foreground">Public Repositories</p>
-                                <div className="text-2xl font-bold mt-4">{analysisResult.github.contributionsLastYear}</div>
-                                <p className="text-xs text-muted-foreground">Contributions (Last Year)</p>
-                                <div className="text-2xl font-bold mt-4">{analysisResult.github.activityLevel}</div>
-                                <p className="text-xs text-muted-foreground">Activity Level</p>
-                              </CardContent>
-                            </Card>
-                          )}
-                          {analysisResult.leetCode && (
-                             <Card>
-                               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                <CardTitle className="text-sm font-medium">LeetCode Analysis</CardTitle>
-                                <Code2 className="h-4 w-4 text-muted-foreground" />
-                              </CardHeader>
-                               <CardContent>
-                                <div className="text-2xl font-bold">{analysisResult.leetCode.totalSolved}</div>
-                                <p className="text-xs text-muted-foreground mb-4">Total Problems Solved</p>
-                                <div className="space-y-2">
-                                   <div>
-                                    <div className="flex justify-between text-sm font-medium">
-                                      <span>Easy</span>
-                                      <span>{analysisResult.leetCode.easySolved}</span>
+                              <CardContent className="space-y-4">
+                                <div className="flex items-center gap-4">
+                                   <Avatar className="w-20 h-20">
+                                      <AvatarImage src={analysisResult.github.avatarUrl} alt="GitHub Avatar" />
+                                      <AvatarFallback>GH</AvatarFallback>
+                                    </Avatar>
+                                    <div className="space-y-1">
+                                      <div className="grid grid-cols-3 gap-x-4 gap-y-1 text-sm">
+                                          <div className="font-semibold">Repositories</div>
+                                          <div className="font-semibold">Followers</div>
+                                          <div className="font-semibold">Contributions</div>
+                                          <div className="text-2xl font-bold">{analysisResult.github.repositories}</div>
+                                          <div className="text-2xl font-bold">{analysisResult.github.followers}</div>
+                                           <div className="text-2xl font-bold">{analysisResult.github.contributionsLastYear}</div>
+                                      </div>
                                     </div>
-                                    <Progress value={(analysisResult.leetCode.easySolved / analysisResult.leetCode.totalSolved) * 100} className="h-2 bg-green-500/20 [&>div]:bg-green-500" />
-                                  </div>
-                                   <div>
-                                    <div className="flex justify-between text-sm font-medium">
-                                      <span>Medium</span>
-                                      <span>{analysisResult.leetCode.mediumSolved}</span>
-                                    </div>
-                                    <Progress value={(analysisResult.leetCode.mediumSolved / analysisResult.leetCode.totalSolved) * 100} className="h-2 bg-yellow-500/20 [&>div]:bg-yellow-500" />
-                                  </div>
-                                   <div>
-                                    <div className="flex justify-between text-sm font-medium">
-                                      <span>Hard</span>
-                                      <span>{analysisResult.leetCode.hardSolved}</span>
-                                    </div>
-                                    <Progress value={(analysisResult.leetCode.hardSolved / analysisResult.leetCode.totalSolved) * 100} className="h-2 bg-red-500/20 [&>div]:bg-red-500" />
-                                  </div>
+                                </div>
+                                <div>
+                                  <p className="text-sm text-muted-foreground italic">"{analysisResult.github.bio}"</p>
                                 </div>
                               </CardContent>
                             </Card>
                           )}
+                          <div className="grid md:grid-cols-2 gap-6">
+                            {analysisResult.leetCode && (
+                               <Card>
+                                 <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                  <CardTitle className="text-lg font-medium flex items-center gap-2"><Code2/> LeetCode Analysis</CardTitle>
+                                </CardHeader>
+                                 <CardContent>
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                      <p className="text-xs text-muted-foreground">Ranking</p>
+                                      <p className="text-2xl font-bold">{analysisResult.leetCode.ranking.toLocaleString()}</p>
+                                    </div>
+                                     <div>
+                                      <p className="text-xs text-muted-foreground">Reputation</p>
+                                      <p className="text-2xl font-bold">{analysisResult.leetCode.reputation}</p>
+                                    </div>
+                                  </div>
+                                  <div className="text-lg font-bold mt-4">{analysisResult.leetCode.totalSolved}</div>
+                                  <p className="text-xs text-muted-foreground mb-4">Total Problems Solved</p>
+                                  <div className="space-y-2">
+                                     <div>
+                                      <div className="flex justify-between text-sm font-medium">
+                                        <span>Easy</span>
+                                        <span>{analysisResult.leetCode.easySolved}</span>
+                                      </div>
+                                      <Progress value={(analysisResult.leetCode.easySolved / analysisResult.leetCode.totalSolved) * 100} className="h-2 bg-green-500/20 [&>div]:bg-green-500" />
+                                    </div>
+                                     <div>
+                                      <div className="flex justify-between text-sm font-medium">
+                                        <span>Medium</span>
+                                        <span>{analysisResult.leetCode.mediumSolved}</span>
+                                      </div>
+                                      <Progress value={(analysisResult.leetCode.mediumSolved / analysisResult.leetCode.totalSolved) * 100} className="h-2 bg-yellow-500/20 [&>div]:bg-yellow-500" />
+                                    </div>
+                                     <div>
+                                      <div className="flex justify-between text-sm font-medium">
+                                        <span>Hard</span>
+                                        <span>{analysisResult.leetCode.hardSolved}</span>
+                                      </div>
+                                      <Progress value={(analysisResult.leetCode.hardSolved / analysisResult.leetCode.totalSolved) * 100} className="h-2 bg-red-500/20 [&>div]:bg-red-500" />
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            )}
+                             {analysisResult.stackOverflow && (
+                               <Card>
+                                 <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                  <CardTitle className="text-lg font-medium flex items-center gap-2"><Badge/> Stack Overflow</CardTitle>
+                                </CardHeader>
+                                 <CardContent>
+                                    <p className="text-xs text-muted-foreground">Reputation</p>
+                                    <p className="text-2xl font-bold mb-4">{analysisResult.stackOverflow.reputation.toLocaleString()}</p>
+                                    
+                                    <p className="text-xs text-muted-foreground">Badges</p>
+                                    <div className="flex items-center gap-4 mb-4">
+                                      <div className="flex items-center gap-1.5">
+                                        <Trophy className="w-5 h-5 text-yellow-500" />
+                                        <span className="font-bold text-lg">{analysisResult.stackOverflow.goldBadges}</span>
+                                      </div>
+                                       <div className="flex items-center gap-1.5">
+                                        <Trophy className="w-5 h-5 text-slate-400" />
+                                        <span className="font-bold text-lg">{analysisResult.stackOverflow.silverBadges}</span>
+                                      </div>
+                                       <div className="flex items-center gap-1.5">
+                                        <Trophy className="w-5 h-5 text-amber-800" />
+                                        <span className="font-bold text-lg">{analysisResult.stackOverflow.bronzeBadges}</span>
+                                      </div>
+                                    </div>
+
+                                    <p className="text-xs text-muted-foreground">Top Tags</p>
+                                    <div className="flex flex-wrap gap-2 mt-1">
+                                      {analysisResult.stackOverflow.topTags.map(tag => (
+                                        <UiBadge key={tag} variant="secondary">{tag}</UiBadge>
+                                      ))}
+                                    </div>
+                                </CardContent>
+                              </Card>
+                            )}
+                          </div>
                         </div>
                       ) : (
                         <div className="text-center text-muted-foreground min-h-[150px] flex items-center justify-center">
