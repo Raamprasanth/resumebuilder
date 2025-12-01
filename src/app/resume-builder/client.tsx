@@ -50,22 +50,10 @@ const formSchema = GenerateResumeInputSchema;
 
 const templateOptions = [
   {
-    id: 'classic',
-    label: 'Classic',
-    imageUrl: 'https://picsum.photos/seed/classic/400/566',
-    imageHint: 'classic resume'
-  },
-  {
-    id: 'modern',
-    label: 'Modern',
-    imageUrl: 'https://picsum.photos/seed/modern/400/566',
-    imageHint: 'modern resume'
-  },
-  {
     id: 'elegant',
     label: 'Elegant',
-    imageUrl: 'https://picsum.photos/seed/elegant/400/566',
-    imageHint: 'elegant resume'
+    imageUrl: 'https://picsum.photos/seed/elegant-resume/400/566',
+    imageHint: 'elegant resume professional'
   },
 ];
 
@@ -86,7 +74,7 @@ export function ResumeBuilderClient() {
           company: 'Tech Corp',
           startDate: '2020-01',
           endDate: 'Present',
-          jobDescription: '- Developed and maintained web applications using React and Node.js.\n- Collaborated with cross-functional teams to deliver high-quality software.',
+          jobDescription: '• Developed and maintained web applications using React and Node.js.\n• Collaborated with cross-functional teams to deliver high-quality software.',
         },
       ],
       education: [
@@ -97,8 +85,8 @@ export function ResumeBuilderClient() {
           endDate: '2020-05',
         },
       ],
-      skills: 'JavaScript, React, Node.js, Python, SQL',
-      template: 'classic',
+      skills: '• JavaScript, React, Node.js\n• Python, SQL\n• AWS, Docker',
+      template: 'elegant',
     },
   });
 
@@ -156,14 +144,21 @@ export function ResumeBuilderClient() {
       const canvasWidth = canvas.width;
       const canvasHeight = canvas.height;
       const ratio = canvasWidth / canvasHeight;
-      const height = pdfWidth / ratio;
-      
-      // Check if content exceeds one page
-      if (height > pdfHeight) {
-          console.warn("Content exceeds PDF page height. Consider a multi-page solution for longer resumes.");
-      }
+      let imgHeight = pdfWidth / ratio;
+      let heightLeft = imgHeight;
 
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, height);
+      let position = 0;
+
+      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+      heightLeft -= pdfHeight;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+        heightLeft -= pdfHeight;
+      }
+      
       pdf.save(`resume-${values.template}.pdf`);
 
       document.body.removeChild(renderContainer);
@@ -408,10 +403,10 @@ export function ResumeBuilderClient() {
                           name={`experiences.${index}.jobDescription`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Description</FormLabel>
+                              <FormLabel>Description (use bullet points)</FormLabel>
                               <FormControl>
                                 <Textarea
-                                  placeholder="Describe your responsibilities and achievements..."
+                                  placeholder="• Describe your responsibilities and achievements..."
                                   {...field}
                                 />
                               </FormControl>
@@ -529,10 +524,10 @@ export function ResumeBuilderClient() {
                     name="skills"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Skills</FormLabel>
+                        <FormLabel>Skills (use bullet points)</FormLabel>
                         <FormControl>
                           <Textarea
-                            placeholder="List your skills, separated by commas: JavaScript, React, Node.js..."
+                            placeholder="• JavaScript, React, Node.js..."
                             {...field}
                           />
                         </FormControl>
