@@ -80,7 +80,7 @@ export default function LandingPage() {
               </p>
             </div>
             <div className="hidden md:block">
-              <Image src="https://picsum.photos/seed/job-illustration/600/400" alt="Illustration of a person working on a laptop" width={600} height={400} className="rounded-lg" data-ai-hint="person working laptop" />
+              <Image src="https://picsum.photos/seed/career-search/600/400" alt="Illustration of a person planning their career path" width={600} height={400} className="rounded-lg" data-ai-hint="job search business" />
             </div>
           </div>
         </section>
@@ -91,13 +91,13 @@ export default function LandingPage() {
             <Card className="text-center p-6">
               <div className="flex justify-center mb-3">
                  <div className="bg-blue-100 p-3 rounded-md">
-                    <Briefcase className="h-6 w-6 text-primary" />
+                    <Briefcase className="h-6 w-6 text-blue-500" />
                  </div>
               </div>
               <p className="text-2xl font-bold text-gray-900">1,75,324</p>
               <p className="text-sm text-gray-500">Live Job</p>
             </Card>
-             <Card className="text-center p-6 border-primary shadow-lg">
+             <Card className="text-center p-6 border-blue-500 shadow-lg">
               <div className="flex justify-center mb-3">
                  <div className="bg-blue-100 p-3 rounded-md">
                     <Image src="https://picsum.photos/seed/companies-icon/24/24" alt="Companies icon" width={24} height={24} data-ai-hint="office building"/>
@@ -109,7 +109,7 @@ export default function LandingPage() {
              <Card className="text-center p-6">
               <div className="flex justify-center mb-3">
                  <div className="bg-blue-100 p-3 rounded-md">
-                    <User className="h-6 w-6 text-primary" />
+                    <User className="h-6 w-6 text-blue-500" />
                  </div>
               </div>
               <p className="text-2xl font-bold text-gray-900">38,47,154</p>
@@ -118,7 +118,7 @@ export default function LandingPage() {
              <Card className="text-center p-6">
               <div className="flex justify-center mb-3">
                  <div className="bg-blue-100 p-3 rounded-md">
-                    <Briefcase className="h-6 w-6 text-primary" />
+                    <Briefcase className="h-6 w-6 text-blue-500" />
                  </div>
               </div>
               <p className="text-2xl font-bold text-gray-900">7,532</p>
