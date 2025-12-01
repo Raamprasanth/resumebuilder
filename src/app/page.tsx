@@ -29,16 +29,6 @@ export default function LandingPage() {
                     <Briefcase className="h-8 w-8 text-primary" />
                     <span className="font-bold text-2xl text-gray-900">JobGenie</span>
                 </Link>
-                 <div className="hidden md:flex flex-1 max-w-lg items-center border rounded-md ml-8">
-                     <Button variant="ghost" className="flex items-center space-x-1">
-                        <Image src="https://picsum.photos/seed/india-flag/20/15" alt="India flag" width={20} height={15} data-ai-hint="country flag" />
-                        <span>India</span>
-                        <ChevronDown className="w-4 h-4" />
-                     </Button>
-                     <span className="w-px h-6 bg-gray-200"></span>
-                    <Search className="h-5 w-5 text-gray-400 mx-3"/>
-                    <input type="text" placeholder="Job tittle, keyword, company" className="flex-1 bg-transparent focus:outline-none text-sm"/>
-                </div>
                 <div className="flex items-center gap-2">
                     <Button variant="ghost" asChild>
                         <Link href="/login">Sign In</Link>
@@ -57,10 +47,10 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="max-w-xl">
               <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight text-gray-900">
-                Find a job that suits your interest & skills.
+                Find a job that suits your interests & skills.
               </h1>
               <p className="mt-6 text-lg text-gray-600">
-                Aliquam vitae turpis in diam convallis finibus in at risus. Nullam in scelerisque leo, eget sollicitudin velit vestibulum.
+                Find the perfect job for you, with a personalized search and AI-powered recommendations to guide your career.
               </p>
               <div className="mt-10 p-4 bg-white shadow-lg rounded-lg border">
                 <form className="grid sm:grid-cols-3 gap-4">
@@ -80,50 +70,8 @@ export default function LandingPage() {
               </p>
             </div>
             <div className="hidden md:block">
-              <Image src="https://picsum.photos/seed/career-search/600/400" alt="Illustration of a person planning their career path" width={600} height={400} className="rounded-lg" data-ai-hint="job search business" />
+              <Image src="https://picsum.photos/seed/job-search/600/500" alt="Illustration of a person planning their career path" width={600} height={500} className="rounded-lg" data-ai-hint="job search business" />
             </div>
-          </div>
-        </section>
-
-        {/* Stats Section */}
-        <section className="pb-20">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <Card className="text-center p-6">
-              <div className="flex justify-center mb-3">
-                 <div className="bg-blue-100 p-3 rounded-md">
-                    <Briefcase className="h-6 w-6 text-blue-500" />
-                 </div>
-              </div>
-              <p className="text-2xl font-bold text-gray-900">1,75,324</p>
-              <p className="text-sm text-gray-500">Live Job</p>
-            </Card>
-             <Card className="text-center p-6 border-blue-500 shadow-lg">
-              <div className="flex justify-center mb-3">
-                 <div className="bg-blue-100 p-3 rounded-md">
-                    <Image src="https://picsum.photos/seed/companies-icon/24/24" alt="Companies icon" width={24} height={24} data-ai-hint="office building"/>
-                 </div>
-              </div>
-              <p className="text-2xl font-bold text-gray-900">97,354</p>
-              <p className="text-sm text-gray-500">Companies</p>
-            </Card>
-             <Card className="text-center p-6">
-              <div className="flex justify-center mb-3">
-                 <div className="bg-blue-100 p-3 rounded-md">
-                    <User className="h-6 w-6 text-blue-500" />
-                 </div>
-              </div>
-              <p className="text-2xl font-bold text-gray-900">38,47,154</p>
-              <p className="text-sm text-gray-500">Candidates</p>
-            </Card>
-             <Card className="text-center p-6">
-              <div className="flex justify-center mb-3">
-                 <div className="bg-blue-100 p-3 rounded-md">
-                    <Briefcase className="h-6 w-6 text-blue-500" />
-                 </div>
-              </div>
-              <p className="text-2xl font-bold text-gray-900">7,532</p>
-              <p className="text-sm text-gray-500">New Jobs</p>
-            </Card>
           </div>
         </section>
 
