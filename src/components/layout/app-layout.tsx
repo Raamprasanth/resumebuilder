@@ -8,7 +8,6 @@ import {
 } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/layout/app-sidebar';
 import type { ReactNode } from 'react';
-import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
 
 function ConditionalLayout({ children }: { children: ReactNode }) {

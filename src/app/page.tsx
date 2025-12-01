@@ -7,8 +7,7 @@ import {
 import Link from 'next/link';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 
 const popularVacancies = [
   { title: 'Anesthesiologists', openings: 45904, domain: 'Medical' },
@@ -36,14 +35,14 @@ export default function LandingPage() {
     }, {} as Record<string, number>);
 
   return (
-    <div className="bg-white text-gray-800">
+    <div className="bg-background text-foreground">
       {/* Main Header */}
-      <div className="sticky top-0 bg-white/80 backdrop-blur-sm z-10 border-b">
+      <header className="sticky top-0 bg-background/80 backdrop-blur-sm z-10 border-b">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             <Link href="/" className="flex items-center gap-2">
               <Briefcase className="h-8 w-8 text-primary" />
-              <span className="font-bold text-2xl text-gray-900">
+              <span className="font-bold text-2xl">
                 JobGenie
               </span>
             </Link>
@@ -60,47 +59,47 @@ export default function LandingPage() {
          <nav className="border-t">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-center items-center h-12">
-                    <ul className="flex items-center gap-8 text-sm font-medium text-gray-600">
+                    <ul className="flex items-center gap-8 text-sm font-medium text-muted-foreground">
                         {Object.entries(jobCountsByDomain).map(([domain, count]) => (
                             <li key={domain} className="flex items-center gap-2">
-                               <span className="font-semibold text-gray-800">{domain}</span>
-                               <span className="text-xs bg-gray-200 text-gray-700 font-bold rounded-full px-2 py-0.5">{count.toLocaleString()}</span>
+                               <span className="font-semibold text-foreground">{domain}</span>
+                               <span className="text-xs bg-muted text-muted-foreground font-bold rounded-full px-2 py-0.5">{count.toLocaleString()}</span>
                             </li>
                         ))}
                     </ul>
                 </div>
             </div>
         </nav>
-      </div>
+      </header>
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Hero Section */}
         <section className="py-20 md:py-32">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="max-w-xl">
-              <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight text-gray-900">
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight">
                 Find a job that suits your interests & skills.
               </h1>
-              <p className="mt-6 text-lg text-gray-600">
+              <p className="mt-6 text-lg text-muted-foreground">
                 Find the perfect job for you, with a personalized search and
                 AI-powered recommendations to guide your career.
               </p>
-              <div className="mt-10 p-4 bg-white shadow-lg rounded-lg border">
-                <form className="grid sm:grid-cols-3 gap-4">
+              <div className="mt-10 p-2 bg-card shadow-lg rounded-lg border">
+                <form className="grid sm:grid-cols-3 gap-2">
                   <div className="relative sm:col-span-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <Input
                       type="text"
                       placeholder="Job title, Keyword..."
-                      className="pl-10 h-12 border-none focus-visible:ring-0"
+                      className="pl-10 h-12 bg-card border-none focus-visible:ring-0"
                     />
                   </div>
                   <div className="relative sm:col-span-1 border-l">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <Input
                       type="text"
                       placeholder="Your Location"
-                      className="pl-10 h-12 border-none focus-visible:ring-0"
+                      className="pl-10 h-12 bg-card border-none focus-visible:ring-0"
                     />
                   </div>
                   <Button size="lg" className="w-full h-12 sm:col-span-1">
@@ -108,9 +107,9 @@ export default function LandingPage() {
                   </Button>
                 </form>
               </div>
-              <p className="mt-4 text-sm text-gray-500">
+              <p className="mt-4 text-sm text-muted-foreground">
                 Suggestion:{' '}
-                <span className="text-gray-800">
+                <span className="text-foreground/90">
                   Designer, Programing, Digital Marketing, Video, Animation.
                 </span>
               </p>
@@ -121,33 +120,16 @@ export default function LandingPage() {
                 alt="Illustration of a person planning their career path"
                 width={600}
                 height={500}
-                className="rounded-lg"
+                className="rounded-lg opacity-80"
                 data-ai-hint="job search business"
               />
             </div>
           </div>
         </section>
-
-        {/* Word Animation Section */}
-        <section className="py-20">
-          <div className="flex justify-center items-center">
-            <h2 className="text-5xl font-bold text-center tracking-wider uppercase word-animation">
-              <span>J</span>
-              <span>o</span>
-              <span>b</span>
-              <span>G</span>
-              <span>e</span>
-              <span>n</span>
-              <span>i</span>
-              <span>e</span>
-            </h2>
-          </div>
-        </section>
         
-
         {/* Most Popular Vacancies */}
         <section className="py-20">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
+          <h2 className="text-3xl font-bold text-center mb-12">
             Most Popular Vacancies
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-10">
@@ -163,7 +145,7 @@ export default function LandingPage() {
                     {vacancy.title}
                   </Link>
                 </h3>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-muted-foreground">
                   {vacancy.openings.toLocaleString()} Open Positions
                 </p>
               </div>
@@ -172,23 +154,11 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="bg-gray-50 border-t mt-20">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center text-gray-500 text-sm">
+      <footer className="bg-card/50 border-t mt-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center text-muted-foreground text-sm">
           <p>&copy; {new Date().getFullYear()} JobGenie. All rights reserved.</p>
         </div>
       </footer>
     </div>
-  );
-}
-
-function Input({ ...props }) {
-  return (
-    <input
-      {...props}
-      className={
-        'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ' +
-        (props.className || '')
-      }
-    />
   );
 }
