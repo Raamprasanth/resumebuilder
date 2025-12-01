@@ -25,15 +25,6 @@ const popularVacancies = [
 ];
 
 export default function LandingPage() {
-
-    const jobCountsByDomain = popularVacancies.reduce((acc, job) => {
-        if (!acc[job.domain]) {
-            acc[job.domain] = 0;
-        }
-        acc[job.domain] += job.openings;
-        return acc;
-    }, {} as Record<string, number>);
-
   return (
     <div className="bg-background text-foreground">
       {/* Main Header */}
@@ -56,20 +47,6 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-         <nav className="border-t">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-center items-center h-12">
-                    <ul className="flex items-center gap-8 text-sm font-medium text-muted-foreground">
-                        {Object.entries(jobCountsByDomain).map(([domain, count]) => (
-                            <li key={domain} className="flex items-center gap-2">
-                               <span className="font-semibold text-foreground">{domain}</span>
-                               <span className="text-xs bg-muted text-muted-foreground font-bold rounded-full px-2 py-0.5">{count.toLocaleString()}</span>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            </div>
-        </nav>
       </header>
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8">
