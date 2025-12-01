@@ -1,7 +1,7 @@
 import { AtsAnalyzerClient } from './client';
 
 export const metadata = {
-    title: 'Resume Review | CareerCompass AI',
+    title: 'Resume Review | JobGenie',
     description: 'Get an AI-powered review of your resume.',
 };
 

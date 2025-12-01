@@ -38,7 +38,7 @@ export function AppSidebar() {
         <div className="flex items-center gap-2">
           <Compass className="size-6 text-primary" />
           <span className="text-lg font-semibold font-headline">
-            CareerCompass AI
+            JobGenie
           </span>
         </div>
       </SidebarHeader>
