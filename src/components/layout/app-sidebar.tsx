@@ -13,7 +13,7 @@ import {
   Moon,
   Laptop,
   TrendingUp,
-  Settings,
+  Shield,
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
@@ -52,7 +52,7 @@ const primaryMenuItems = [
 ];
 
 const secondaryMenuItems = [
-    { href: '/settings', label: 'Settings', icon: Settings },
+    { href: '/privacy-policy', label: 'Privacy & Policy', icon: Shield },
 ]
 
 export function AppSidebar() {
