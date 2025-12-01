@@ -8,17 +8,17 @@ import { getFirestore } from 'firebase/firestore'
 // IMPORTANT: DO NOT MODIFY THIS FUNCTION
 export function initializeFirebase() {
   if (getApps().length) {
-    return getSdks(getApp());
+    const app = getApp();
+    // Ensure the app is initialized with the correct config
+    if (app.options.projectId === firebaseConfig.projectId) {
+      return getSdks(app);
+    }
   }
 
-  let firebaseApp;
-  // In a production Firebase App Hosting environment, the SDK is automatically
-  // initialized. In other environments, we'll fall back to the config object.
-  try {
-    firebaseApp = initializeApp();
-  } catch (e) {
-    firebaseApp = initializeApp(firebaseConfig);
-  }
+  // Always initialize with the config as a fallback.
+  // In a production App Hosting environment, initializeApp() with no args
+  // works, but for local dev and other environments, the config is necessary.
+  const firebaseApp = initializeApp(firebaseConfig);
 
   return getSdks(firebaseApp);
 }
