@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -11,3 +12,6 @@ import '@/ai/flows/job-recommendation';
 import '@/ai/flows/profile-match';
 import '@/ai/flows/resume-enhancement';
 import '@/ai/flows/resume-html-generation';
+import '@/ai/flows/smart-scan';
+
+    

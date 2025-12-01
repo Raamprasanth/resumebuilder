@@ -10,6 +10,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
+import { JobRecommendationSchema } from '../schemas/resume-generation';
 
 const JobRecommendationInputSchema = z.object({
   jobTitle: z.string().describe('The desired job title, e.g., "Software Engineer".'),
@@ -18,18 +19,6 @@ const JobRecommendationInputSchema = z.object({
 export type JobRecommendationInput = z.infer<
   typeof JobRecommendationInputSchema
 >;
-
-const JobRecommendationSchema = z.object({
-    id: z.string().describe('A unique identifier for the job.'),
-    title: z.string().describe('The job title.'),
-    company: z.string().describe('The name of the company.'),
-    location: z.string().describe('The location of the job.'),
-    logoUrl: z.string().url().describe('A URL for a fictional but realistic company logo. Use picsum.photos for placeholder images (e.g., https://picsum.photos/seed/cologo1/100/100).'),
-    description: z.string().describe('A detailed, realistic job description, formatted with markdown (using headings, lists, etc.).'),
-    applyUrl: z.string().url().describe('A fictional URL to apply for the job.'),
-});
-export type JobRecommendation = z.infer<typeof JobRecommendationSchema>;
-
 
 const JobRecommendationOutputSchema = z.object({
   recommendations: z.array(JobRecommendationSchema).describe('A list of 4-5 realistic job recommendations.'),
