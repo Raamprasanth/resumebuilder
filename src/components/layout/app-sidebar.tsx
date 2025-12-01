@@ -7,6 +7,8 @@ import {
   LayoutDashboard,
   Map,
   Briefcase,
+  LogOut,
+  ChevronDown,
 } from 'lucide-react';
 
 import {
@@ -16,6 +18,9 @@ import {
   SidebarMenuButton,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarSeparator,
 } from '@/components/ui/sidebar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -35,48 +40,63 @@ export function AppSidebar() {
   return (
     <>
       <SidebarHeader>
-        <div className="flex items-center gap-2">
-          <Compass className="size-6 text-primary" />
-          <span className="text-lg font-semibold font-headline">
+        <div className="flex items-center gap-2 p-2">
+          <Compass className="size-8 text-primary" />
+          <span className="text-2xl font-bold font-headline">
             JobGenie
           </span>
         </div>
+         <div className="flex items-center justify-between p-2">
+          <div className='flex items-center gap-3'>
+            <Avatar className='size-9'>
+              <AvatarImage
+                src={userAvatar?.imageUrl}
+                alt="User"
+                data-ai-hint={userAvatar?.imageHint}
+              />
+              <AvatarFallback>U</AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col">
+              <span className="font-semibold">User</span>
+              <span className="text-xs text-muted-foreground">
+                My Account
+              </span>
+            </div>
+          </div>
+          <ChevronDown className='size-4 text-muted-foreground' />
+        </div>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarMenu>
-          {menuItems.map((item) => (
-            <SidebarMenuItem key={item.href}>
-              <SidebarMenuButton
-                asChild
-                isActive={isActive(item.href)}
-                tooltip={{ children: item.label, side: 'right' }}
-              >
-                <Link href={item.href}>
-                  <item.icon />
-                  <span>{item.label}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
+        <SidebarGroup>
+          <SidebarGroupLabel>MENU</SidebarGroupLabel>
+          <SidebarMenu>
+            {menuItems.map((item) => (
+              <SidebarMenuItem key={item.href}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive(item.href)}
+                  tooltip={{ children: item.label, side: 'right' }}
+                >
+                  <Link href={item.href}>
+                    <item.icon />
+                    <span>{item.label}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
       </SidebarContent>
+      <SidebarSeparator />
       <SidebarFooter>
-        <div className="flex items-center gap-3 p-2">
-          <Avatar>
-            <AvatarImage
-              src={userAvatar?.imageUrl}
-              alt="User"
-              data-ai-hint={userAvatar?.imageHint}
-            />
-            <AvatarFallback>U</AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col">
-            <span className="font-semibold">User</span>
-            <span className="text-xs text-muted-foreground">
-              user@example.com
-            </span>
-          </div>
-        </div>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton tooltip={{ children: 'Log Out', side: 'right' }}>
+              <LogOut />
+              <span>Log Out</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarFooter>
     </>
   );
