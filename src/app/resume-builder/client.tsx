@@ -1,6 +1,12 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  generateLatexResume,
+  GenerateLatexResumeInputSchema,
+  type GenerateLatexResumeInput,
+} from '@/ai/flows/resume-generation';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -15,21 +21,137 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { User, Briefcase, GraduationCap, Code, Download } from 'lucide-react';
+import {
+  User,
+  Briefcase,
+  GraduationCap,
+  Code,
+  Download,
+  PlusCircle,
+  Trash2,
+  Loader2,
+  Wand2,
+} from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useState } from 'react';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { cn } from '@/lib/utils';
+import Image from 'next/image';
+import { Label } from '@/components/ui/label';
+
+const formSchema = GenerateLatexResumeInputSchema;
+
+const templateOptions = [
+  {
+    id: 'classic',
+    label: 'Classic',
+    imageUrl: 'https://picsum.photos/seed/classic/400/566',
+    imageHint: 'classic resume'
+  },
+  {
+    id: 'modern',
+    label: 'Modern',
+    imageUrl: 'https://picsum.photos/seed/modern/400/566',
+    imageHint: 'modern resume'
+  },
+  {
+    id: 'elegant',
+    label: 'Elegant',
+    imageUrl: 'https://picsum.photos/seed/elegant/400/566',
+    imageHint: 'elegant resume'
+  },
+];
 
 export function ResumeBuilderClient() {
-  const form = useForm();
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  function onDownload(type: 'PDF' | 'LaTeX') {
+  const form = useForm<GenerateLatexResumeInput>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      fullName: 'John Doe',
+      email: 'john.doe@example.com',
+      phone: '+1 234 567 890',
+      summary: 'A brief summary of your professional background...',
+      experiences: [
+        {
+          jobTitle: 'Software Engineer',
+          company: 'Tech Corp',
+          startDate: '2020-01',
+          endDate: 'Present',
+          jobDescription: '- Developed and maintained web applications using React and Node.js.\n- Collaborated with cross-functional teams to deliver high-quality software.',
+        },
+      ],
+      education: [
+        {
+          degree: 'Bachelor of Science in Computer Science',
+          university: 'State University',
+          startDate: '2016-09',
+          endDate: '2020-05',
+        },
+      ],
+      skills: 'JavaScript, React, Node.js, Python, SQL',
+      template: 'classic',
+    },
+  });
+
+  const {
+    fields: experienceFields,
+    append: appendExperience,
+    remove: removeExperience,
+  } = useFieldArray({
+    control: form.control,
+    name: 'experiences',
+  });
+
+  const {
+    fields: educationFields,
+    append: appendEducation,
+    remove: removeEducation,
+  } = useFieldArray({
+    control: form.control,
+    name: 'education',
+  });
+
+  async function onDownload(values: GenerateLatexResumeInput) {
+    setIsLoading(true);
+    try {
+      const result = await generateLatexResume(values);
+      const blob = new Blob([result.latexCode], { type: 'text/x-latex' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `resume-${values.template}.tex`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast({
+        title: 'Download Started',
+        description: 'Your LaTeX resume file is downloading.',
+      });
+    } catch (error) {
+      console.error('Error generating resume:', error);
+      toast({
+        title: 'Generation Failed',
+        description:
+          'There was an error generating your resume. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }
+  
+  function onDownloadPDF() {
     toast({
       title: 'Feature in development',
-      description: `${type} download is not yet implemented.`,
+      description: 'PDF download is not yet implemented.',
     });
   }
 
@@ -38,13 +160,71 @@ export function ResumeBuilderClient() {
       <CardHeader>
         <CardTitle>LaTeX Resume Builder</CardTitle>
         <CardDescription>
-          Fill in your details to generate a professional resume. Download as
-          PDF or LaTeX code.
+          Fill in your details, choose a template, and generate a professional
+          resume.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form className="space-y-8">
+          <form onSubmit={form.handleSubmit(onDownload)} className="space-y-8">
+            <FormField
+              control={form.control}
+              name="template"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel className="text-base font-semibold">Choose a Template</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="grid grid-cols-2 md:grid-cols-3 gap-4"
+                    >
+                      {templateOptions.map((template) => (
+                        <FormItem
+                          key={template.id}
+                          className="flex items-center space-x-3 space-y-0"
+                        >
+                          <FormControl>
+                            <div>
+                              <RadioGroupItem
+                                value={template.id}
+                                id={template.id}
+                                className="sr-only"
+                              />
+                              <Label htmlFor={template.id} className="cursor-pointer">
+                                <Card
+                                  className={cn(
+                                    'overflow-hidden transition-all',
+                                    field.value === template.id &&
+                                      'ring-2 ring-primary ring-offset-2 ring-offset-background'
+                                  )}
+                                >
+                                  <CardContent className="p-0">
+                                    <Image
+                                      src={template.imageUrl}
+                                      alt={template.label}
+                                      width={400}
+                                      height={566}
+                                      className="aspect-[1/1.414]"
+                                      data-ai-hint={template.imageHint}
+                                    />
+                                  </CardContent>
+                                </Card>
+                                <span className="block text-center mt-2 text-sm font-medium">
+                                  {template.label}
+                                </span>
+                              </Label>
+                            </div>
+                          </FormControl>
+                        </FormItem>
+                      ))}
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <Tabs defaultValue="personal" className="w-full">
               <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="personal">
@@ -68,6 +248,7 @@ export function ResumeBuilderClient() {
               <TabsContent value="personal" className="mt-6">
                 <div className="space-y-4">
                   <FormField
+                    control={form.control}
                     name="fullName"
                     render={({ field }) => (
                       <FormItem>
@@ -80,6 +261,7 @@ export function ResumeBuilderClient() {
                   />
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <FormField
+                      control={form.control}
                       name="email"
                       render={({ field }) => (
                         <FormItem>
@@ -95,6 +277,7 @@ export function ResumeBuilderClient() {
                       )}
                     />
                     <FormField
+                      control={form.control}
                       name="phone"
                       render={({ field }) => (
                         <FormItem>
@@ -111,6 +294,7 @@ export function ResumeBuilderClient() {
                     />
                   </div>
                   <FormField
+                    control={form.control}
                     name="summary"
                     render={({ field }) => (
                       <FormItem>
@@ -128,85 +312,189 @@ export function ResumeBuilderClient() {
               </TabsContent>
 
               <TabsContent value="experience" className="mt-6">
-                <div className="space-y-4">
-                  <FormField
-                    name="jobTitle"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Job Title</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Software Engineer" {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    name="company"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Company</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Tech Corp" {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    name="jobDescription"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Description</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Describe your responsibilities and achievements..."
-                            {...field}
+                <div className="space-y-6">
+                  {experienceFields.map((field, index) => (
+                    <Card key={field.id} className="p-4 relative">
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                          <FormField
+                            control={form.control}
+                            name={`experiences.${index}.jobTitle`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Job Title</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Software Engineer" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
                           />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <div className="flex justify-end">
-                    <Button variant="outline">Add Another Experience</Button>
-                  </div>
+                          <FormField
+                            control={form.control}
+                            name={`experiences.${index}.company`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Company</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Tech Corp" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                          <FormField
+                            control={form.control}
+                            name={`experiences.${index}.startDate`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Start Date</FormLabel>
+                                <FormControl>
+                                  <Input type="month" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name={`experiences.${index}.endDate`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>End Date</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Present" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        <FormField
+                          control={form.control}
+                          name={`experiences.${index}.jobDescription`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Description</FormLabel>
+                              <FormControl>
+                                <Textarea
+                                  placeholder="Describe your responsibilities and achievements..."
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute top-2 right-2 text-muted-foreground hover:text-destructive"
+                        onClick={() => removeExperience(index)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </Card>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => appendExperience({ jobTitle: '', company: '', startDate: '', endDate: '', jobDescription: '' })}
+                  >
+                    <PlusCircle className="mr-2 h-4 w-4" /> Add Experience
+                  </Button>
                 </div>
               </TabsContent>
 
               <TabsContent value="education" className="mt-6">
-                <div className="space-y-4">
-                  <FormField
-                    name="degree"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Degree</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Bachelor of Science in Computer Science"
-                            {...field}
+                <div className="space-y-6">
+                  {educationFields.map((field, index) => (
+                    <Card key={field.id} className="p-4 relative">
+                      <div className="space-y-4">
+                        <FormField
+                          control={form.control}
+                          name={`education.${index}.degree`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Degree</FormLabel>
+                              <FormControl>
+                                <Input placeholder="B.S. in Computer Science" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`education.${index}.university`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>University</FormLabel>
+                              <FormControl>
+                                <Input placeholder="State University" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
                           />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    name="university"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>University</FormLabel>
-                        <FormControl>
-                          <Input placeholder="State University" {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <div className="flex justify-end">
-                    <Button variant="outline">Add Another Education</Button>
-                  </div>
+                           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                             <FormField
+                              control={form.control}
+                              name={`education.${index}.startDate`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Start Date</FormLabel>
+                                  <FormControl>
+                                    <Input type="month" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name={`education.${index}.endDate`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>End Date</FormLabel>
+                                  <FormControl>
+                                    <Input type="month" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                           </div>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute top-2 right-2 text-muted-foreground hover:text-destructive"
+                        onClick={() => removeEducation(index)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </Card>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => appendEducation({ degree: '', university: '', startDate: '', endDate: '' })}
+                  >
+                    <PlusCircle className="mr-2 h-4 w-4" /> Add Education
+                  </Button>
                 </div>
               </TabsContent>
 
               <TabsContent value="skills" className="mt-6">
                 <div className="space-y-4">
                   <FormField
+                    control={form.control}
                     name="skills"
                     render={({ field }) => (
                       <FormItem>
@@ -217,6 +505,7 @@ export function ResumeBuilderClient() {
                             {...field}
                           />
                         </FormControl>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -226,13 +515,18 @@ export function ResumeBuilderClient() {
 
             <div className="flex justify-end space-x-4 pt-4 border-t">
               <Button
-                variant="outline"
-                type="button"
-                onClick={() => onDownload('LaTeX')}
+                variant="secondary"
+                type="submit"
+                disabled={isLoading}
               >
-                <Download className="mr-2 h-4 w-4" /> Download LaTeX
+                {isLoading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Download className="mr-2 h-4 w-4" />
+                )}
+                Download LaTeX
               </Button>
-              <Button type="button" onClick={() => onDownload('PDF')}>
+              <Button type="button" onClick={onDownloadPDF}>
                 <Download className="mr-2 h-4 w-4" /> Download PDF
               </Button>
             </div>
