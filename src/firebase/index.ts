@@ -1,36 +1,33 @@
 'use client';
 
 import { firebaseConfig } from '@/firebase/config';
-import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
+import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore'
+import { getFirestore } from 'firebase/firestore';
 
-// IMPORTANT: DO NOT MODIFY THIS FUNCTION
+let firebaseApp: FirebaseApp;
+
+// A more robust initialization function
 export function initializeFirebase() {
-  if (getApps().length) {
-    const app = getApp();
-    // Ensure the app is initialized with the correct config
-    if (app.options.projectId === firebaseConfig.projectId) {
-      return getSdks(app);
-    }
+  if (!getApps().length) {
+    // Initialize the app only if it hasn't been initialized yet
+    firebaseApp = initializeApp(firebaseConfig);
+  } else {
+    // If it has been initialized, get the default app
+    firebaseApp = getApp();
   }
-
-  // Always initialize with the config as a fallback.
-  // In a production App Hosting environment, initializeApp() with no args
-  // works, but for local dev and other environments, the config is necessary.
-  const firebaseApp = initializeApp(firebaseConfig);
 
   return getSdks(firebaseApp);
 }
 
-
-export function getSdks(firebaseApp: FirebaseApp) {
+export function getSdks(app: FirebaseApp) {
   return {
-    firebaseApp,
-    auth: getAuth(firebaseApp),
-    firestore: getFirestore(firebaseApp)
+    firebaseApp: app,
+    auth: getAuth(app),
+    firestore: getFirestore(app),
   };
 }
+
 
 export * from './provider';
 export * from './client-provider';
