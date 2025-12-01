@@ -61,6 +61,12 @@ const templateOptions = [
     imageUrl: 'https://picsum.photos/seed/elegant-resume/400/566',
     imageHint: 'elegant resume professional',
   },
+  {
+    id: 'professional',
+    label: 'Professional',
+    imageUrl: 'https://picsum.photos/seed/professional-resume/400/566',
+    imageHint: 'professional resume modern',
+  },
 ];
 
 export function ResumeBuilderClient() {

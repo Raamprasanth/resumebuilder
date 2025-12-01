@@ -96,6 +96,54 @@ The user has selected the '{{{template}}}' template.
 </div>
 \'\'\'
 
+**IF template is 'professional' USE THIS STRUCTURE:**
+\'\'\'html
+<div id="resume-container" style="font-family: 'Helvetica Neue', 'Arial', sans-serif; line-height: 1.6; color: #333; background-color: #fff; width: 210mm; min-height: 297mm; padding: 20mm;">
+    <header style="border-bottom: 2px solid #005a9c; padding-bottom: 15px; margin-bottom: 25px; text-align: left;">
+        <h1 style="font-size: 48px; font-weight: 700; margin: 0; color: #005a9c;">{{{fullName}}}</h1>
+        <p style="font-size: 16px; margin: 5px 0 0 0; color: #555;">{{{email}}} &nbsp;|&nbsp; {{{phone}}}</p>
+    </header>
+
+    <section style="margin-bottom: 25px;">
+        <h2 style="font-size: 20px; font-weight: 600; color: #005a9c; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 15px;">PROFESSIONAL SUMMARY</h2>
+        <p style="font-size: 15px; color: #444;">{{{summary}}}</p>
+    </section>
+
+    <section style="margin-bottom: 25px;">
+        <h2 style="font-size: 20px; font-weight: 600; color: #005a9c; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 15px;">PROFESSIONAL EXPERIENCE</h2>
+        {{#each experiences}}
+        <div style="margin-bottom: 20px; break-inside: avoid;">
+            <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <h3 style="margin: 0; font-size: 18px; font-weight: 600; color: #222;">{{this.jobTitle}}</h3>
+                <span style="font-size: 14px; font-weight: 500; color: #666;">{{this.startDate}} &ndash; {{this.endDate}}</span>
+            </div>
+            <p style="margin: 2px 0 10px 0; font-size: 16px; font-style: italic; color: #555;">{{this.company}}</p>
+            <p style="font-size: 14px; margin-left: 20px; color: #444; white-space: pre-line;">{{this.jobDescription}}</p>
+        </div>
+        {{/each}}
+    </section>
+
+    <section>
+        <div style="display: flex; gap: 20px;">
+            <div style="width: 50%; break-inside: avoid;">
+                 <h2 style="font-size: 20px; font-weight: 600; color: #005a9c; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 15px;">EDUCATION</h2>
+                {{#each education}}
+                <div style="margin-bottom: 15px;">
+                    <h3 style="margin: 0; font-size: 17px; font-weight: 600; color: #222;">{{this.degree}}</h3>
+                    <p style="margin: 2px 0; font-size: 15px; color: #555;">{{this.university}}</p>
+                    <p style="margin: 0; font-size: 14px; color: #666;">{{this.startDate}} &ndash; {{this.endDate}}</p>
+                </div>
+                {{/each}}
+            </div>
+            <div style="width: 50%; break-inside: avoid;">
+                <h2 style="font-size: 20px; font-weight: 600; color: #005a9c; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 15px;">SKILLS</h2>
+                 <p style="font-size: 14px; color: #444; white-space: pre-line;">{{{skills}}}</p>
+            </div>
+        </div>
+    </section>
+</div>
+\'\'\'
+
 Generate the HTML code based *only* on the selected template's structure.
 `,
   config: {
