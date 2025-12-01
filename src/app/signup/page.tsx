@@ -29,7 +29,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { FirebaseError } from 'firebase/app';
-import { setDocumentNonBlocking } from '@/firebase';
+import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 const formSchema = z.object({
   firstName: z.string().min(1, 'First name is required.'),
@@ -204,5 +204,3 @@ export default function SignupPage() {
     </div>
   );
 }
-
-    
