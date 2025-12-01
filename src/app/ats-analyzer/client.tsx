@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -17,6 +16,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from '@/components/ui/card';
 import {
   Form,
@@ -33,28 +33,14 @@ import {
   Upload,
   FileText,
   X,
-  CheckCircle2,
-  AlertTriangle,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
-import {
-  ChartContainer,
-} from "@/components/ui/chart"
-import {
-  PolarAngleAxis,
-  RadialBar,
-  RadialBarChart,
-} from "recharts"
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion"
-
+import { ChartContainer } from '@/components/ui/chart';
+import { PolarAngleAxis, RadialBar, RadialBarChart } from 'recharts';
+import { Separator } from '@/components/ui/separator';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_FILE_TYPES = [
@@ -130,11 +116,18 @@ export function AtsAnalyzerClient() {
       default:
         return 'destructive';
     }
+  };
+
+  const getScoreColor = (score: number) => {
+    if (score >= 80) return "text-green-500";
+    if (score >= 60) return "text-yellow-500";
+    return "text-red-500";
   }
+
 
   return (
     <div className="space-y-6">
-       <h1 className="text-3xl font-bold tracking-tight">Resume Review</h1>
+      <h1 className="text-3xl font-bold tracking-tight">Resume Review</h1>
 
       {!analysisResult && (
         <Card>
@@ -146,8 +139,11 @@ export function AtsAnalyzerClient() {
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                 <FormField
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-6"
+              >
+                <FormField
                   control={form.control}
                   name="resumeFile"
                   render={({ field }) => (
@@ -156,7 +152,9 @@ export function AtsAnalyzerClient() {
                         <Controller
                           name="resumeFile"
                           control={form.control}
-                          render={({ field: { onChange, onBlur, name, ref } }) => (
+                          render={({
+                            field: { onChange, onBlur, name, ref },
+                          }) => (
                             <div className="relative">
                               <Input
                                 id="resumeFile"
@@ -207,7 +205,11 @@ export function AtsAnalyzerClient() {
                                   variant="ghost"
                                   size="icon"
                                   className="absolute right-2 top-2 h-6 w-6 rounded-full"
-                                  onClick={() => form.setValue('resumeFile', null, { shouldValidate: true })}
+                                  onClick={() =>
+                                    form.setValue('resumeFile', null, {
+                                      shouldValidate: true,
+                                    })
+                                  }
                                 >
                                   <X className="h-4 w-4" />
                                 </Button>
@@ -220,7 +222,7 @@ export function AtsAnalyzerClient() {
                     </FormItem>
                   )}
                 />
-                 <Button
+                <Button
                   type="submit"
                   disabled={isLoading || !selectedFile}
                   className="w-full"
@@ -243,7 +245,6 @@ export function AtsAnalyzerClient() {
         </Card>
       )}
 
-
       {isLoading && (
         <div className="flex flex-col items-center justify-center space-y-4 min-h-[300px]">
           <Loader2 className="h-10 w-10 animate-spin text-primary" />
@@ -255,19 +256,25 @@ export function AtsAnalyzerClient() {
         <div className="space-y-6">
           <Card>
             <CardHeader>
-               <div className="flex flex-col items-center gap-4 sm:flex-row">
-                <div className="h-40 w-40">
+              <div className="flex flex-col items-center gap-4 sm:flex-row">
+                <div className="h-32 w-32 shrink-0">
                   <ChartContainer
                     config={{
                       score: {
-                        label: "Score",
-                        color: "hsl(var(--primary))",
+                        label: 'Score',
+                        color: 'hsl(var(--primary))',
                       },
                     }}
                     className="mx-auto aspect-square h-full w-full"
                   >
                     <RadialBarChart
-                      data={[{ name: "Score", value: analysisResult.overallScore, fill: "hsl(var(--primary))" }]}
+                      data={[
+                        {
+                          name: 'Score',
+                          value: analysisResult.overallScore,
+                          fill: 'hsl(var(--primary))',
+                        },
+                      ]}
                       startAngle={-270}
                       endAngle={90}
                       innerRadius="70%"
@@ -283,7 +290,7 @@ export function AtsAnalyzerClient() {
                         cornerRadius={10}
                         background={{ fill: 'hsl(var(--muted))' }}
                       />
-                       <text
+                      <text
                         x="50%"
                         y="50%"
                         textAnchor="middle"
@@ -298,101 +305,36 @@ export function AtsAnalyzerClient() {
                 <div className="flex flex-col gap-2">
                   <CardTitle className="text-3xl">Your Resume Score</CardTitle>
                   <CardDescription>
-                    This score is calculated based on its ATS compatibility and overall quality.
+                    This score is calculated based on the variables listed
+                    below.
                   </CardDescription>
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
-               <Card className="bg-green-600/10 border-green-600/20">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-green-900 dark:text-green-200">
-                    <CheckCircle2 /> ATS Score - {analysisResult.overallScore}/100
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <h3 className="font-bold text-lg">{analysisResult.headline}</h3>
-                  <p className="text-sm text-muted-foreground">This score represents how well your resume is likely to perform in Applicant Tracking Systems used by employers.</p>
-                  <div className="space-y-2">
-                    {analysisResult.feedback.map((item, index) => (
-                      <div key={index} className="flex items-start gap-2">
-                        {item.type === 'positive' ? (
-                          <CheckCircle2 className="mt-1 size-4 shrink-0 text-green-600" />
-                        ) : (
-                          <AlertTriangle className="mt-1 size-4 shrink-0 text-amber-600" />
-                        )}
-                        <p className={cn(
-                          "text-sm",
-                          item.type === 'positive' ? 'text-green-900 dark:text-green-300' : 'text-amber-900 dark:text-amber-300'
-                        )}>{item.message}</p>
-                      </div>
-                    ))}
-                  </div>
-                  <p className="text-xs text-muted-foreground pt-2">{analysisResult.summary}</p>
-                </CardContent>
-              </Card>
-            </CardContent>
-          </Card>
-
-          <Accordion type="single" collapsible className="w-full" defaultValue={analysisResult.scoreBreakdown[0]?.category}>
-            {analysisResult.scoreBreakdown.map((item) => (
-              <AccordionItem value={item.category} key={item.category}>
-                <AccordionTrigger>
-                  <div className="flex items-center gap-3">
-                    <p className="font-semibold">{item.category}</p>
-                    <Badge variant={getBadgeVariant(item.badge)}>{item.badge}</Badge>
-                  </div>
-                  <p className="font-bold text-lg">{item.score}/100</p>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-4">
-                     <div className="rounded-lg border bg-card p-4">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                           {item.detailedFeedback.map((fb, i) => (
-                            <div key={i} className="flex items-center gap-2 text-sm">
-                                {fb.type === 'positive' ? (
-                                    <CheckCircle2 className="size-4 shrink-0 text-green-500" />
-                                ) : (
-                                    <AlertTriangle className="size-4 shrink-0 text-amber-500" />
-                                )}
-                                <span className="font-medium">{fb.title}</span>
-                            </div>
-                           ))}
-                        </div>
+            <CardContent className="space-y-2">
+              {analysisResult.scoreBreakdown.map((item, index) => (
+                <>
+                  <div key={item.category} className="flex items-center justify-between rounded-lg p-4 bg-muted/30 hover:bg-muted/60 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <p className="font-semibold">{item.category}</p>
+                      <Badge variant={getBadgeVariant(item.badge)}>{item.badge}</Badge>
                     </div>
-
-                    {item.detailedFeedback.map((fb, i) => (
-                        <Card key={i} className={cn(
-                           fb.type === 'positive' ? "bg-green-600/10 border-green-600/20" : "bg-amber-600/10 border-amber-600/20"
-                        )}>
-                            <CardHeader>
-                                <CardTitle className={cn(
-                                    "flex items-center gap-2 text-base",
-                                    fb.type === 'positive' ? "text-green-900 dark:text-green-200" : "text-amber-900 dark:text-amber-200"
-                                )}>
-                                    {fb.type === 'positive' ? (
-                                        <CheckCircle2 />
-                                    ) : (
-                                        <AlertTriangle />
-                                    )}
-                                    {fb.title}
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-sm text-muted-foreground">{fb.description}</p>
-                            </CardContent>
-                        </Card>
-                    ))}
+                    <p className={cn("font-bold text-lg", getScoreColor(item.score))}>{item.score}/100</p>
                   </div>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-
-          <Button onClick={() => setAnalysisResult(null)} variant="outline" className="w-full">
-              Analyze Another Resume
-          </Button>
-
+                  {index < analysisResult.scoreBreakdown.length - 1 && <Separator />}
+                </>
+              ))}
+            </CardContent>
+            <CardFooter>
+                <Button
+                    onClick={() => setAnalysisResult(null)}
+                    variant="outline"
+                    className="w-full"
+                >
+                    Analyze Another Resume
+                </Button>
+            </CardFooter>
+          </Card>
         </div>
       )}
     </div>
