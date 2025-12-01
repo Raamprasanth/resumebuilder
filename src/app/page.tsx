@@ -21,42 +21,13 @@ const popularVacancies = [
 export default function LandingPage() {
   return (
     <div className="bg-white text-gray-800">
-      {/* Top Header */}
-      <header className="border-b">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            {/* Main Nav */}
-            <nav className="hidden md:flex items-center space-x-6 text-sm">
-              <Link href="#" className="font-semibold text-primary">Home</Link>
-              <Link href="#" className="text-gray-500 hover:text-primary">Find Job</Link>
-              <Link href="#" className="text-gray-500 hover:text-primary">Employers</Link>
-              <Link href="#" className="text-gray-500 hover:text-primary">Candidates</Link>
-              <Link href="#" className="text-gray-500 hover:text-primary">Pricing Plans</Link>
-              <Link href="#" className="text-gray-500 hover:text-primary">Customer Supports</Link>
-            </nav>
-            {/* Contact & Language */}
-            <div className="flex items-center space-x-4 ml-auto">
-              <Link href="tel:+12025550178" className="hidden sm:flex items-center text-sm text-gray-500">
-                <Phone className="w-4 h-4 mr-1.5" />
-                +1-202-555-0178
-              </Link>
-              <Button variant="ghost" size="sm" className="flex items-center space-x-1 text-gray-500">
-                <Globe className="w-4 h-4" />
-                <span>English</span>
-                <ChevronDown className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* Main Header */}
       <div className="sticky top-0 bg-white/80 backdrop-blur-sm z-10 border-b">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-20">
                 <Link href="/" className="flex items-center gap-2">
                     <Briefcase className="h-8 w-8 text-primary" />
-                    <span className="font-bold text-2xl text-gray-900">MyJob</span>
+                    <span className="font-bold text-2xl text-gray-900">JobGenie</span>
                 </Link>
                  <div className="hidden md:flex flex-1 max-w-lg items-center border rounded-md ml-8">
                      <Button variant="ghost" className="flex items-center space-x-1">
@@ -174,7 +145,7 @@ export default function LandingPage() {
 
        <footer className="bg-gray-50 border-t mt-20">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center text-gray-500 text-sm">
-                <p>&copy; {new Date().getFullYear()} MyJob. All rights reserved.</p>
+                <p>&copy; {new Date().getFullYear()} JobGenie. All rights reserved.</p>
             </div>
         </footer>
     </div>
@@ -193,5 +164,3 @@ function cn(...inputs: any[]) {
     // A simple version of clsx
     return inputs.filter(Boolean).join(' ');
 }
-
-    
