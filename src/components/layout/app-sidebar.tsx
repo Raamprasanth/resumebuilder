@@ -29,7 +29,7 @@ const menuItems = [
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const isActive = (href: string) => pathname === href;
+  const isActive = (href: string) => pathname === href || (href !== '/' && pathname.startsWith(href));
   const userAvatar = PlaceHolderImages.find((p) => p.id === 'user-avatar');
 
   return (

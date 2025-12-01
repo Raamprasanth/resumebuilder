@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -15,7 +15,6 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardFooter,
 } from '@/components/ui/card';
 import {
   Form,
@@ -30,6 +29,8 @@ import { Briefcase, Loader2, Search } from 'lucide-react';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
   jobTitle: z
@@ -46,6 +47,8 @@ export function JobRecommendations() {
   );
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -61,6 +64,13 @@ export function JobRecommendations() {
     try {
       const result = await generateJobRecommendations(values);
       setRecommendations(result.recommendations);
+      // Store in session storage to pass to the job page
+      if (typeof window !== 'undefined' && window.sessionStorage) {
+        window.sessionStorage.setItem(
+          'jobRecommendations',
+          JSON.stringify(result.recommendations)
+        );
+      }
     } catch (error) {
       console.error('Error fetching job recommendations:', error);
       toast({
@@ -72,6 +82,12 @@ export function JobRecommendations() {
       setIsLoading(false);
     }
   }
+
+  const handleJobClick = (jobId: string) => {
+    startTransition(() => {
+      router.push(`/jobs/${jobId}`);
+    });
+  };
 
   return (
     <Card className="flex flex-col">
@@ -132,7 +148,7 @@ export function JobRecommendations() {
         </Form>
 
         <div className="mt-6 space-y-4">
-          {isLoading && (
+          {(isLoading || isPending) && (
             <div className="space-y-4">
               {[...Array(3)].map((_, i) => (
                 <div key={i} className="flex items-center space-x-4">
@@ -145,41 +161,47 @@ export function JobRecommendations() {
               ))}
             </div>
           )}
-          {!isLoading && recommendations.length > 0 && (
-            <div className="space-y-4">
-              {recommendations.map((job, index) => (
-                <div
-                  key={index}
-                  className="flex items-start gap-4 rounded-lg p-2 hover:bg-accent/50"
+          {!isLoading && !isPending && recommendations.length > 0 && (
+            <div className="space-y-1">
+              {recommendations.map((job) => (
+                <button
+                  key={job.id}
+                  onClick={() => handleJobClick(job.id)}
+                  className="w-full text-left"
                 >
-                  <div className="relative h-12 w-12 shrink-0">
-                    <Image
-                      src={job.logoUrl}
-                      alt={`${job.company} logo`}
-                      fill
-                      className="rounded-md object-contain"
-                      data-ai-hint="company logo"
-                    />
+                  <div
+                    className="flex items-start gap-4 rounded-lg p-2 hover:bg-accent/50"
+                  >
+                    <div className="relative h-12 w-12 shrink-0">
+                      <Image
+                        src={job.logoUrl}
+                        alt={`${job.company} logo`}
+                        fill
+                        className="rounded-md object-contain"
+                        data-ai-hint="company logo"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold">{job.title}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {job.company}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {job.location}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <p className="font-semibold">{job.title}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {job.company}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {job.location}
-                    </p>
-                  </div>
-                </div>
+                </button>
               ))}
             </div>
           )}
-          {!isLoading && recommendations.length === 0 && (
-             <Alert className="mt-6">
-                <AlertTitle>Find Your Next Role</AlertTitle>
-                <AlertDescription>
-                  Enter a job title and location to discover open positions tailored to you.
-                </AlertDescription>
+          {!isLoading && !isPending && recommendations.length === 0 && (
+            <Alert className="mt-6">
+              <AlertTitle>Find Your Next Role</AlertTitle>
+              <AlertDescription>
+                Enter a job title and location to discover open positions
+                tailored to you.
+              </AlertDescription>
             </Alert>
           )}
         </div>
