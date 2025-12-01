@@ -42,7 +42,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 const profileSchema = z.object({
   firstName: z.string().min(1, 'First name is required.'),
   lastName: z.string().min(1, 'Last name is required.'),
-  email: z.string().email(),
   phoneNumber: z.string().optional(),
   dateOfBirth: z.string().optional(),
   nationality: z.string().optional(),
@@ -75,7 +74,6 @@ export function ProfileClient() {
     defaultValues: {
       firstName: '',
       lastName: '',
-      email: '',
       phoneNumber: '',
       dateOfBirth: '',
       nationality: '',
@@ -243,19 +241,6 @@ export function ProfileClient() {
               </TabsContent>
               <TabsContent value="contact" className="mt-6">
                  <div className="space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email</FormLabel>
-                          <FormControl>
-                            <Input type="email" readOnly disabled {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
                      <FormField
                       control={form.control}
                       name="phoneNumber"
