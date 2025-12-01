@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -9,6 +10,10 @@ import { doc, serverTimestamp } from 'firebase/firestore';
 import { useFirebase } from '@/firebase';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import {
+  analyzeSocialProfiles,
+  type SocialProfileAnalysisOutput,
+} from '@/ai/flows/social-profile-analysis';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -35,9 +40,13 @@ import {
   User as UserIcon,
   Link as LinkIcon,
   Info,
+  Github,
+  Code2,
+  Wand2,
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Progress } from '@/components/ui/progress';
 
 const profileSchema = z.object({
   firstName: z.string().min(1, 'First name is required.'),
@@ -61,6 +70,9 @@ type ProfileFormValues = z.infer<typeof profileSchema>;
 export function ProfileClient() {
   const { firestore, user, isUserLoading } = useFirebase();
   const { toast } = useToast();
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisResult, setAnalysisResult] =
+    useState<SocialProfileAnalysisOutput | null>(null);
 
   const userDocRef = useMemo(
     () => (firestore && user ? doc(firestore, 'users', user.uid) : null),
@@ -131,6 +143,37 @@ export function ProfileClient() {
     }
   }
 
+  const handleAnalyze = async () => {
+    const links = form.getValues('links');
+    if (!links?.github && !links?.leetCode) {
+      toast({
+        title: 'No Profiles to Analyze',
+        description: 'Please add your GitHub or LeetCode profile links first.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsAnalyzing(true);
+    setAnalysisResult(null);
+    try {
+      const result = await analyzeSocialProfiles({
+        githubUrl: links.github,
+        leetCodeUrl: links.leetCode,
+      });
+      setAnalysisResult(result);
+    } catch (error) {
+       console.error('Error analyzing profiles:', error);
+      toast({
+        title: 'Analysis Failed',
+        description: 'There was an error analyzing your profiles. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
   if (isUserLoading || isProfileLoading) {
     return <ProfileSkeleton />;
   }
@@ -147,7 +190,7 @@ export function ProfileClient() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <Tabs defaultValue="personal" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="personal">
                   <Info className="mr-2 h-4 w-4" />
                   Personal
@@ -163,6 +206,10 @@ export function ProfileClient() {
                  <TabsTrigger value="summary">
                   <UserIcon className="mr-2 h-4 w-4" />
                   Summary
+                </TabsTrigger>
+                 <TabsTrigger value="analysis">
+                  <Wand2 className="mr-2 h-4 w-4" />
+                  Analysis
                 </TabsTrigger>
               </TabsList>
               
@@ -342,6 +389,93 @@ export function ProfileClient() {
                     />
                  </div>
               </TabsContent>
+               <TabsContent value="analysis" className="mt-6">
+                <div className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>AI Profile Analysis</CardTitle>
+                      <CardDescription>
+                        Get an AI-powered analysis of your linked GitHub and LeetCode profiles.
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                       {isAnalyzing ? (
+                        <div className="flex items-center justify-center min-h-[150px]">
+                           <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                        </div>
+                      ) : analysisResult ? (
+                        <div className="grid md:grid-cols-2 gap-6">
+                          {analysisResult.github && (
+                            <Card>
+                              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                <CardTitle className="text-sm font-medium">GitHub Analysis</CardTitle>
+                                <Github className="h-4 w-4 text-muted-foreground" />
+                              </CardHeader>
+                              <CardContent>
+                                <div className="text-2xl font-bold">{analysisResult.github.repositories}</div>
+                                <p className="text-xs text-muted-foreground">Public Repositories</p>
+                                <div className="text-2xl font-bold mt-4">{analysisResult.github.contributionsLastYear}</div>
+                                <p className="text-xs text-muted-foreground">Contributions (Last Year)</p>
+                                <div className="text-2xl font-bold mt-4">{analysisResult.github.activityLevel}</div>
+                                <p className="text-xs text-muted-foreground">Activity Level</p>
+                              </CardContent>
+                            </Card>
+                          )}
+                          {analysisResult.leetCode && (
+                             <Card>
+                               <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                <CardTitle className="text-sm font-medium">LeetCode Analysis</CardTitle>
+                                <Code2 className="h-4 w-4 text-muted-foreground" />
+                              </CardHeader>
+                               <CardContent>
+                                <div className="text-2xl font-bold">{analysisResult.leetCode.totalSolved}</div>
+                                <p className="text-xs text-muted-foreground mb-4">Total Problems Solved</p>
+                                <div className="space-y-2">
+                                   <div>
+                                    <div className="flex justify-between text-sm font-medium">
+                                      <span>Easy</span>
+                                      <span>{analysisResult.leetCode.easySolved}</span>
+                                    </div>
+                                    <Progress value={(analysisResult.leetCode.easySolved / analysisResult.leetCode.totalSolved) * 100} className="h-2 bg-green-500/20 [&>div]:bg-green-500" />
+                                  </div>
+                                   <div>
+                                    <div className="flex justify-between text-sm font-medium">
+                                      <span>Medium</span>
+                                      <span>{analysisResult.leetCode.mediumSolved}</span>
+                                    </div>
+                                    <Progress value={(analysisResult.leetCode.mediumSolved / analysisResult.leetCode.totalSolved) * 100} className="h-2 bg-yellow-500/20 [&>div]:bg-yellow-500" />
+                                  </div>
+                                   <div>
+                                    <div className="flex justify-between text-sm font-medium">
+                                      <span>Hard</span>
+                                      <span>{analysisResult.leetCode.hardSolved}</span>
+                                    </div>
+                                    <Progress value={(analysisResult.leetCode.hardSolved / analysisResult.leetCode.totalSolved) * 100} className="h-2 bg-red-500/20 [&>div]:bg-red-500" />
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="text-center text-muted-foreground min-h-[150px] flex items-center justify-center">
+                          <p>Click the button below to analyze your profiles.</p>
+                        </div>
+                      )}
+                    </CardContent>
+                    <CardFooter className="justify-center">
+                      <Button onClick={handleAnalyze} disabled={isAnalyzing} type="button">
+                        {isAnalyzing ? (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                          <Wand2 className="mr-2 h-4 w-4" />
+                        )}
+                        {analysisResult ? 'Re-analyze Profiles' : 'Analyze Profiles'}
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                </div>
+              </TabsContent>
             </Tabs>
 
             <div className="flex justify-end pt-4 border-t">
@@ -370,6 +504,7 @@ function ProfileSkeleton() {
       </CardHeader>
       <CardContent className="space-y-8">
         <div className="flex space-x-1">
+            <Skeleton className="h-10 flex-1" />
             <Skeleton className="h-10 flex-1" />
             <Skeleton className="h-10 flex-1" />
             <Skeleton className="h-10 flex-1" />

@@ -1,3 +1,4 @@
+
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -14,6 +15,7 @@ import {
   Laptop,
   TrendingUp,
   Shield,
+  Code2,
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
@@ -177,5 +179,3 @@ export function AppSidebar() {
     </>
   );
 }
-
-    
