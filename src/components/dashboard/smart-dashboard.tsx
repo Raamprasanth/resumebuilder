@@ -236,13 +236,12 @@ export function SmartDashboard() {
       )}
 
       {scanResult && (
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 mt-6">
-          <div className="lg:col-span-2 space-y-6">
+        <div className="mt-6">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Target />
-                  Your Top Matches
+                  Job Score Board
                 </CardTitle>
                 <CardDescription>
                   Based on your resume, we think you're a great fit for{' '}
@@ -253,114 +252,77 @@ export function SmartDashboard() {
                   <span className="font-bold text-primary">
                     {scanResult.extractedLocation}
                   </span>
-                  . Here are your scores for the recommended jobs:
+                  . Here are your top recommendations:
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 {scanResult.recommendations.map((job) => (
-                  <div key={job.id}>
-                    <div className="flex items-center justify-between mb-2">
-                      <Label className="text-base font-semibold truncate">
-                        {job.title} at {job.company}
-                      </Label>
-                      <Badge
-                        variant={
-                          job.analysis.matchScore > 80 ? 'default' : 'secondary'
-                        }
-                      >
-                        {job.analysis.matchScore} / 100
-                      </Badge>
-                    </div>
-                    <Progress value={job.analysis.matchScore} className="h-2" />
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 text-sm">
-                      <div className="space-y-2">
-                         <h3 className="font-semibold flex items-center gap-2 text-green-500">
-                           <ThumbsUp className="size-4" /> Strengths
-                         </h3>
-                         <ul className="space-y-1 list-disc pl-5 text-muted-foreground">
-                          {job.analysis.strengths.map((item, index) => (
-                            <li key={index}>{item}</li>
-                          ))}
-                         </ul>
-                      </div>
-                       <div className="space-y-2">
-                         <h3 className="font-semibold flex items-center gap-2 text-amber-500">
-                           <Lightbulb className="size-4" /> To Highlight
-                         </h3>
-                         <ul className="space-y-1 list-disc pl-5 text-muted-foreground">
-                          {job.analysis.areasForImprovement.map((item, index) => (
-                            <li key={index}>{item}</li>
-                          ))}
-                         </ul>
-                      </div>
-                    </div>
-                     <Separator className="mt-6" />
-                  </div>
+                   <Card key={job.id} className="p-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                             {/* Job Info */}
+                            <div className="md:col-span-1">
+                                <button
+                                    onClick={() => handleJobClick(job.id)}
+                                    className="w-full text-left p-2 -m-2 rounded-lg hover:bg-accent/50"
+                                    disabled={isPending}
+                                >
+                                    <div className="flex items-start gap-4">
+                                        <div className="relative h-16 w-16 shrink-0">
+                                            <Image
+                                            src={job.logoUrl}
+                                            alt={`${job.company} logo`}
+                                            fill
+                                            className="rounded-md object-contain"
+                                            data-ai-hint="company logo"
+                                            />
+                                        </div>
+                                        <div>
+                                            <p className="font-semibold">{job.title}</p>
+                                            <p className="text-sm text-muted-foreground">{job.company}</p>
+                                            <p className="text-xs text-muted-foreground">{job.location}</p>
+                                        </div>
+                                    </div>
+                                </button>
+                                <div className="mt-4">
+                                    <div className="flex items-center justify-between mb-1">
+                                        <Label className="text-sm font-semibold">Match Score</Label>
+                                        <Badge variant={job.analysis.matchScore > 80 ? 'default' : 'secondary'}>
+                                            {job.analysis.matchScore} / 100
+                                        </Badge>
+                                    </div>
+                                    <Progress value={job.analysis.matchScore} className="h-2" />
+                                </div>
+                            </div>
+                            {/* Analysis */}
+                            <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                                <div className="space-y-2">
+                                    <h3 className="font-semibold flex items-center gap-2 text-green-500">
+                                    <ThumbsUp className="size-4" /> Strengths
+                                    </h3>
+                                    <ul className="space-y-1 list-disc pl-5 text-muted-foreground">
+                                    {job.analysis.strengths.map((item, index) => (
+                                        <li key={index}>{item}</li>
+                                    ))}
+                                    </ul>
+                                </div>
+                                <div className="space-y-2">
+                                    <h3 className="font-semibold flex items-center gap-2 text-amber-500">
+                                    <Lightbulb className="size-4" /> To Highlight
+                                    </h3>
+                                    <ul className="space-y-1 list-disc pl-5 text-muted-foreground">
+                                    {job.analysis.areasForImprovement.map((item, index) => (
+                                        <li key={index}>{item}</li>
+                                    ))}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                   </Card>
                 ))}
               </CardContent>
             </Card>
-          </div>
-          <div className="lg:col-span-1">
-            <Card className="flex flex-col">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Briefcase />
-                  Job Recommendations
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="flex-1">
-                {(isPending) && (
-                   <div className="space-y-4">
-                    {[...Array(3)].map((_, i) => (
-                      <div key={i} className="flex items-center space-x-4">
-                        <div className="h-12 w-12 rounded-lg bg-muted animate-pulse"></div>
-                        <div className="space-y-2 flex-1">
-                          <div className="h-4 w-3/4 rounded bg-muted animate-pulse"></div>
-                          <div className="h-4 w-1/2 rounded bg-muted animate-pulse"></div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {!isPending && (
-                  <div className="space-y-1">
-                    {scanResult.recommendations.map((job) => (
-                      <button
-                        key={job.id}
-                        onClick={() => handleJobClick(job.id)}
-                        className="w-full text-left"
-                      >
-                        <div className="flex items-start gap-4 rounded-lg p-2 hover:bg-accent/50">
-                          <div className="relative h-12 w-12 shrink-0">
-                            <Image
-                              src={job.logoUrl}
-                              alt={`${job.company} logo`}
-                              fill
-                              className="rounded-md object-contain"
-                              data-ai-hint="company logo"
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <p className="font-semibold">{job.title}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {job.company}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {job.location}
-                            </p>
-                          </div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
         </div>
       )}
     </div>
   );
 }
-
-    
