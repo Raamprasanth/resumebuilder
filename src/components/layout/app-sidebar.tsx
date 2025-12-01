@@ -11,7 +11,8 @@ import {
   User,
   Sun,
   Moon,
-  Laptop
+  Laptop,
+  TrendingUp
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
@@ -43,6 +44,7 @@ const menuItems = [
   { href: '/ats-analyzer', label: 'ATS Analyzer', icon: FileText },
   { href: '/resume-builder', label: 'Resume Builder', icon: Briefcase },
   { href: '/career-roadmap', label: 'Career Roadmap', icon: Map },
+  { href: '/job-popularity-index', label: 'Job Popularity', icon: TrendingUp },
 ];
 
 export function AppSidebar() {
