@@ -52,32 +52,6 @@ export default function LandingPage() {
                 JobGenie
               </span>
             </Link>
-            <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-              <Link
-                href="#"
-                className="text-gray-600 hover:text-primary transition-colors"
-              >
-                Home
-              </Link>
-              <Link
-                href="#"
-                className="text-gray-600 hover:text-primary transition-colors"
-              >
-                Find Job
-              </Link>
-              <Link
-                href="#"
-                className="text-gray-600 hover:text-primary transition-colors"
-              >
-                Employers
-              </Link>
-              <Link
-                href="#"
-                className="text-gray-600 hover:text-primary transition-colors"
-              >
-                Candidates
-              </Link>
-            </nav>
             <div className="flex items-center gap-2">
               <Button variant="ghost" asChild>
                 <Link href="/login">Sign In</Link>
