@@ -14,7 +14,7 @@ import { usePathname } from 'next/navigation';
 function ConditionalLayout({ children }: { children: ReactNode }) {
     const pathname = usePathname();
 
-    if (pathname === '/login' || pathname === '/signup') {
+    if (pathname === '/login' || pathname === '/signup' || pathname === '/') {
         return <>{children}</>;
     }
     
@@ -40,5 +40,3 @@ function ConditionalLayout({ children }: { children: ReactNode }) {
 export function AppLayout({ children }: { children: ReactNode }) {
   return <ConditionalLayout>{children}</ConditionalLayout>;
 }
-
-    
