@@ -333,7 +333,7 @@ export function AtsAnalyzerClient() {
             </CardContent>
           </Card>
 
-          <Accordion type="single" collapsible className="w-full">
+          <Accordion type="single" collapsible className="w-full" defaultValue={analysisResult.scoreBreakdown[0]?.category}>
             {analysisResult.scoreBreakdown.map((item) => (
               <AccordionItem value={item.category} key={item.category}>
                 <AccordionTrigger>
@@ -344,7 +344,45 @@ export function AtsAnalyzerClient() {
                   <p className="font-bold text-lg">{item.score}/100</p>
                 </AccordionTrigger>
                 <AccordionContent>
-                  A more detailed breakdown for {item.category} could be provided here.
+                  <div className="space-y-4">
+                    <div className="rounded-lg border bg-card p-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                           {item.detailedFeedback.map((fb, i) => (
+                            <div key={i} className="flex items-center gap-2 text-sm">
+                                {fb.type === 'positive' ? (
+                                    <CheckCircle2 className="size-4 shrink-0 text-green-500" />
+                                ) : (
+                                    <AlertTriangle className="size-4 shrink-0 text-amber-500" />
+                                )}
+                                <span className="text-muted-foreground">{fb.title}</span>
+                            </div>
+                           ))}
+                        </div>
+                    </div>
+
+                    {item.detailedFeedback.map((fb, i) => (
+                        <Card key={i} className={cn(
+                           fb.type === 'positive' ? "bg-green-600/10 border-green-600/20" : "bg-amber-600/10 border-amber-600/20"
+                        )}>
+                            <CardHeader>
+                                <CardTitle className={cn(
+                                    "flex items-center gap-2 text-base",
+                                    fb.type === 'positive' ? "text-green-900 dark:text-green-200" : "text-amber-900 dark:text-amber-200"
+                                )}>
+                                    {fb.type === 'positive' ? (
+                                        <CheckCircle2 />
+                                    ) : (
+                                        <AlertTriangle />
+                                    )}
+                                    {fb.title}
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-sm text-muted-foreground">{fb.description}</p>
+                            </CardContent>
+                        </Card>
+                    ))}
+                  </div>
                 </AccordionContent>
               </AccordionItem>
             ))}
