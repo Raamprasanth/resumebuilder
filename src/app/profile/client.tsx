@@ -8,7 +8,7 @@ import { doc, serverTimestamp } from 'firebase/firestore';
 
 import { useFirebase } from '@/firebase';
 import { useDoc } from '@/firebase/firestore/use-doc';
-import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -115,7 +115,7 @@ export function ProfileClient() {
         updatedAt: serverTimestamp(),
       };
       
-      updateDocumentNonBlocking(userDocRef, dataToUpdate);
+      setDocumentNonBlocking(userDocRef, dataToUpdate, { merge: true });
 
       toast({
         title: 'Profile Updated',
@@ -413,5 +413,3 @@ function ProfileSkeleton() {
     </Card>
   );
 }
-
-    
