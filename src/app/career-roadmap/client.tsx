@@ -28,46 +28,22 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
-import { Loader2, Map, ExternalLink } from 'lucide-react';
+  Loader2,
+  Map,
+  ExternalLink,
+  BookOpen,
+  Rocket,
+  Milestone,
+} from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 
 const formSchema = z.object({
   careerPath: z.string().min(3, 'Career path must be at least 3 characters.'),
   currentSkills: z.string().min(3, 'Please list at least one skill.'),
   timeline: z.string().min(2, 'Timeline must be at least 2 characters.'),
 });
-
-// A simple parser for the AI's output
-const parseRoadmap = (roadmapText: string) => {
-  const stages = roadmapText.split(/Stage \d+:/).filter((s) => s.trim() !== '');
-  return stages.map((stageText, index) => {
-    const titleMatch = stageText.match(/(.*?)\n/);
-    const title = titleMatch ? titleMatch[1].trim() : `Stage ${index + 1}`;
-
-    const resourcesMatch = stageText.match(
-      /Learning Resources:([\s\S]*?)(?=Practice Project Idea:)/s
-    );
-    const resources = resourcesMatch
-      ? resourcesMatch[1]
-          .trim()
-          .split('\n')
-          .filter((r) => r.trim() !== '')
-          .map((r) => r.replace(/^- /, ''))
-      : [];
-
-    const projectMatch = stageText.match(/Practice Project Idea:([\s\S]*)/s);
-    const project = projectMatch
-      ? projectMatch[1].trim()
-      : 'No project idea provided.';
-
-    return { title, resources, project };
-  });
-};
 
 export function CareerRoadmapClient() {
   const [roadmap, setRoadmap] = useState<CareerRoadmapOutput | null>(null);
@@ -102,8 +78,6 @@ export function CareerRoadmapClient() {
     }
   }
 
-  const parsedRoadmap = roadmap ? parseRoadmap(roadmap.roadmap) : [];
-
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
       <div className="lg:col-span-1">
@@ -124,7 +98,10 @@ export function CareerRoadmapClient() {
                     <FormItem>
                       <FormLabel>Desired Career Path</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., Software Engineer" {...field} />
+                        <Input
+                          placeholder="e.g., Software Engineer"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -137,7 +114,10 @@ export function CareerRoadmapClient() {
                     <FormItem>
                       <FormLabel>Current Skills</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., Python, SQL, Git" {...field} />
+                        <Input
+                          placeholder="e.g., Python, SQL, Git"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -150,7 +130,10 @@ export function CareerRoadmapClient() {
                     <FormItem>
                       <FormLabel>Desired Timeline</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., 6 months, 1 year" {...field} />
+                        <Input
+                          placeholder="e.g., 6 months, 1 year"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -182,7 +165,7 @@ export function CareerRoadmapClient() {
           <CardHeader>
             <CardTitle>Your Personalized Roadmap</CardTitle>
             <CardDescription>
-              Follow these stages to achieve your career goals.
+              {roadmap?.title ? `${roadmap.title} - ${roadmap.timeline}` : 'Follow these stages to achieve your career goals.'}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -194,55 +177,58 @@ export function CareerRoadmapClient() {
                 </p>
               </div>
             )}
-            {parsedRoadmap.length > 0 && (
-              <Accordion type="single" collapsible className="w-full">
-                {parsedRoadmap.map((stage, index) => (
-                  <AccordionItem value={`item-${index}`} key={index}>
-                    <AccordionTrigger className="text-lg font-semibold">
-                      Stage {index + 1}: {stage.title}
-                    </AccordionTrigger>
-                    <AccordionContent className="space-y-4 pl-2">
+            {roadmap && roadmap.stages.length > 0 && (
+              <div className="space-y-8">
+                {roadmap.stages.map((stage, index) => (
+                  <div key={index} className="relative pl-8">
+                    <div className="absolute left-0 top-1 flex size-6 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                      <Milestone className="size-4" />
+                    </div>
+                    {index < roadmap.stages.length - 1 && (
+                       <div className="absolute left-3 top-8 h-full w-px bg-border"></div>
+                    )}
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-semibold">{stage.title}</h3>
+                      <Badge variant="secondary">{stage.duration}</Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-1 mb-4">{stage.description}</p>
+
+                    <div className="space-y-4">
                       <div>
-                        <h4 className="font-semibold mb-2">
+                        <h4 className="font-semibold mb-2 flex items-center gap-2">
+                          <BookOpen className="size-4" />
                           Learning Resources
                         </h4>
-                        <ul className="space-y-2 list-disc pl-5">
-                          {stage.resources.map((res, i) => {
-                            const linkMatch = res.match(/\((https?:\/\/[^\s)]+)\)/);
-                            const url = linkMatch ? linkMatch[1] : '#';
-                            const text = linkMatch
-                              ? res.replace(linkMatch[0], '').trim()
-                              : res;
-                            return (
-                              <li key={i} className="text-sm">
-                                <a
-                                  href={url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-1 text-primary hover:underline"
-                                >
-                                  {text}
-                                  {url !== '#' && (
-                                    <ExternalLink className="size-3 shrink-0" />
-                                  )}
-                                </a>
-                              </li>
-                            );
-                          })}
+                        <ul className="space-y-1.5 list-none pl-2">
+                          {stage.resources.map((res, i) => (
+                            <li key={i} className="text-sm">
+                              <a
+                                href={res.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1.5 text-primary hover:underline"
+                              >
+                                <ExternalLink className="size-3 shrink-0" />
+                                {res.name}
+                              </a>
+                            </li>
+                          ))}
                         </ul>
                       </div>
+                       <Separator />
                       <div>
-                        <h4 className="font-semibold mb-2">
-                          Practice Project Idea
+                        <h4 className="font-semibold mb-2 flex items-center gap-2">
+                          <Rocket className="size-4" />
+                          Practice Project: {stage.project.name}
                         </h4>
-                        <p className="text-muted-foreground">{stage.project}</p>
+                        <p className="text-sm text-muted-foreground pl-2">{stage.project.description}</p>
                       </div>
-                    </AccordionContent>
-                  </AccordionItem>
+                    </div>
+                  </div>
                 ))}
-              </Accordion>
+              </div>
             )}
-            {!isLoading && parsedRoadmap.length === 0 && (
+            {!isLoading && (!roadmap || roadmap.stages.length === 0) && (
               <div className="flex h-[400px] flex-col items-center justify-center rounded-lg border-2 border-dashed text-center text-muted-foreground">
                 <p>Your roadmap awaits.</p>
                 <p className="text-sm">

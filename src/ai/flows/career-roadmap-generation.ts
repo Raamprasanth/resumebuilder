@@ -13,13 +13,31 @@ import {z} from 'genkit';
 
 const CareerRoadmapInputSchema = z.object({
   careerPath: z.string().describe('The desired career path (e.g., Data Scientist, Software Engineer).'),
-  currentSkills: z.string().describe('A comma-separated list of the user\u2019s current skills.'),
+  currentSkills: z.string().describe('A comma-separated list of the user’s current skills.'),
   timeline: z.string().describe('The desired timeline to achieve the career goal (e.g., 6 months, 1 year).'),
 });
 export type CareerRoadmapInput = z.infer<typeof CareerRoadmapInputSchema>;
 
+const StageSchema = z.object({
+  title: z.string().describe('A concise title for this stage of the roadmap (e.g., "Foundational Python").'),
+  duration: z.string().describe('The estimated time to complete this stage (e.g., "Month 1", "Weeks 1-2").'),
+  description: z.string().describe('A brief (1-2 sentences) description of what this stage covers.'),
+  resources: z.array(
+      z.object({
+        name: z.string().describe('The display name of the learning resource.'),
+        url: z.string().url().describe('The URL for the learning resource.'),
+      })
+    ).describe('A list of 2-3 key learning resources (courses, tutorials) for this stage.'),
+  project: z.object({
+    name: z.string().describe('A descriptive name for the practice project.'),
+    description: z.string().describe('A short description of the practice project.'),
+  }).describe('A practical project idea to apply the skills learned in this stage.'),
+});
+
 const CareerRoadmapOutputSchema = z.object({
-  roadmap: z.string().describe('A detailed career roadmap with stages, learning resources, and practice project ideas.'),
+  title: z.string().describe('An overall title for the roadmap (e.g., "Software Developer Career Roadmap").'),
+  timeline: z.string().describe('The total duration of the roadmap (e.g., "6 Months").'),
+  stages: z.array(StageSchema).describe('An array of the different stages in the career roadmap.'),
 });
 export type CareerRoadmapOutput = z.infer<typeof CareerRoadmapOutputSchema>;
 
@@ -34,8 +52,11 @@ const prompt = ai.definePrompt({
   prompt: `You are a career coach that provides actionable and helpful career roadmaps.
 
   Based on the user's desired career path, current skills, and timeline, generate a personalized career roadmap.
-  The roadmap should include stage-wise learning resources (links to courses, tutorials, documentation) and practice project ideas.
-  Make sure that each stage has a source link for the learning and a practice project idea.
+  The roadmap should be broken down into logical stages. For each stage, you must provide:
+  1. A clear title and estimated duration.
+  2. A brief description of the stage's goals.
+  3. A list of 2-3 high-quality, real online learning resources (with valid URLs).
+  4. A concrete and practical project idea with a name and description.
 
   Desired Career Path: {{{careerPath}}}
   Current Skills: {{{currentSkills}}}
