@@ -150,7 +150,7 @@ A two-column layout with a colored sidebar. Use sans-serif fonts and a clean, co
                 <h3 style="margin: 0; font-size: 16px; font-weight: bold;">{{this.jobTitle}}</h3>
                 <div style="display: flex; justify-content: space-between; font-style: italic; color: #718096; margin-bottom: 5px; font-size: 14px;">
                     <span>{{this.company}}</span>
-                    <span>{{this.startDate}} - {{this.endDate}}</span>
+                    <span>{{this.endDate}}</span>
                 </div>
                 <ul style="padding-left: 20px; margin: 0; font-size: 14px; line-height: 1.6;">
                     {{#each (split this.jobDescription '\n')}}
@@ -216,7 +216,7 @@ A minimalist, stylish design that uses whitespace effectively.
 
 Generate the HTML code based *only* on the selected template's structure.
 `,
-  helpers: {
+  customHelpers: {
     split: (str: string, separator: string) => str.split(separator).map(s => s.trim()).filter(s => s),
     trim: (str: string) => str.trim(),
   },
