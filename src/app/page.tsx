@@ -18,21 +18,30 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Card, CardContent } from '@/components/ui/card';
 
 const popularVacancies = [
-  { title: 'Anesthesiologists', openings: 45904 },
-  { title: 'Surgeons', openings: 50364 },
-  { title: 'Obstetricians-Gynecologists', openings: 4339 },
-  { title: 'Orthodontists', openings: 20079 },
-  { title: 'Maxillofacial Surgeons', openings: 74875 },
-  { title: 'Software Developer', openings: 43359 },
-  { title: 'Psychiatrists', openings: 18599 },
-  { title: 'Data Scientist', openings: 28200, featured: true },
-  { title: 'Financial Manager', openings: 61391 },
-  { title: 'Management Analysis', openings: 93046 },
-  { title: 'IT Manager', openings: 50963 },
-  { title: 'Operations Research Analysis', openings: 16627 },
+  { title: 'Anesthesiologists', openings: 45904, domain: 'Medical' },
+  { title: 'Surgeons', openings: 50364, domain: 'Medical' },
+  { title: 'Obstetricians-Gynecologists', openings: 4339, domain: 'Medical' },
+  { title: 'Orthodontists', openings: 20079, domain: 'Medical' },
+  { title: 'Maxillofacial Surgeons', openings: 74875, domain: 'Medical' },
+  { title: 'Software Developer', openings: 43359, domain: 'Tech' },
+  { title: 'Psychiatrists', openings: 18599, domain: 'Medical' },
+  { title: 'Data Scientist', openings: 28200, featured: true, domain: 'Tech' },
+  { title: 'Financial Manager', openings: 61391, domain: 'Finance' },
+  { title: 'Management Analysis', openings: 93046, domain: 'Business' },
+  { title: 'IT Manager', openings: 50963, domain: 'Tech' },
+  { title: 'Operations Research Analysis', openings: 16627, domain: 'Business' },
 ];
 
 export default function LandingPage() {
+
+    const jobCountsByDomain = popularVacancies.reduce((acc, job) => {
+        if (!acc[job.domain]) {
+            acc[job.domain] = 0;
+        }
+        acc[job.domain] += job.openings;
+        return acc;
+    }, {} as Record<string, number>);
+
   return (
     <div className="bg-white text-gray-800">
       {/* Main Header */}
@@ -55,6 +64,20 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
+         <nav className="border-t">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex justify-center items-center h-12">
+                    <ul className="flex items-center gap-8 text-sm font-medium text-gray-600">
+                        {Object.entries(jobCountsByDomain).map(([domain, count]) => (
+                            <li key={domain} className="flex items-center gap-2">
+                               <span className="font-semibold text-gray-800">{domain}</span>
+                               <span className="text-xs bg-gray-200 text-gray-700 font-bold rounded-full px-2 py-0.5">{count.toLocaleString()}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
+        </nav>
       </div>
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8">
