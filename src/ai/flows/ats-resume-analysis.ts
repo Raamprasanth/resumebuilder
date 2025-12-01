@@ -12,9 +12,11 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const AnalyzeResumeInputSchema = z.object({
-  resumeText: z
+  resumeDataUri: z
     .string()
-    .describe('The text content of the resume.'),
+    .describe(
+      "A resume file, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'. Supported types include PDF and DOCX."
+    ),
 });
 export type AnalyzeResumeInput = z.infer<typeof AnalyzeResumeInputSchema>;
 
@@ -35,13 +37,13 @@ const prompt = ai.definePrompt({
   input: {schema: AnalyzeResumeInputSchema},
   output: {schema: AnalyzeResumeOutputSchema},
   prompt: `You are an expert in resumes and Applicant Tracking Systems (ATS).
-  Analyze the following resume and provide a general analysis.
+  Analyze the following resume document and provide a general analysis.
   Provide feedback on its structure, clarity, keyword optimization, and formatting for ATS parsing.
   Give suggestions for improvement to increase its overall quality and ATS compatibility.
   Also, provide an overall score from 0 to 100, representing how well-structured and optimized the resume is.
 
   Resume:
-  {{resumeText}}
+  {{media url=resumeDataUri}}
 `,
 });
 
