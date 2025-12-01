@@ -26,9 +26,13 @@ export default function DashboardPage() {
 
   return (
     <div>
+      <div className='mb-6'>
+          <h1 className="text-3xl font-bold tracking-tight">Find Your Next Job</h1>
+          <p className="text-muted-foreground">
+            Search for jobs or use our AI smart scan to get personalized recommendations.
+          </p>
+      </div>
       <SmartDashboard />
     </div>
   );
 }
-
-    
