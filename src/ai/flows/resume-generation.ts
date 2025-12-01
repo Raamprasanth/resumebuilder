@@ -4,44 +4,15 @@
  * @fileOverview A flow for generating a LaTeX resume from user data and a template.
  *
  * - generateLatexResume - Generates the LaTeX source code for a resume.
- * - GenerateLatexResumeInput - The input type for the generateLatexResume function.
- * - GenerateLatexResumeOutput - The return type for the generateLatexResume function.
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
-
-const ExperienceSchema = z.object({
-  jobTitle: z.string(),
-  company: z.string(),
-  jobDescription: z.string(),
-  startDate: z.string(),
-  endDate: z.string(),
-});
-
-const EducationSchema = z.object({
-  degree: z.string(),
-  university: z.string(),
-  startDate: z.string(),
-  endDate: z.string(),
-});
-
-const GenerateLatexResumeInputSchema = z.object({
-  fullName: z.string(),
-  email: z.string().email(),
-  phone: z.string(),
-  summary: z.string(),
-  experiences: z.array(ExperienceSchema),
-  education: z.array(EducationSchema),
-  skills: z.string(),
-  template: z.enum(['classic', 'modern', 'elegant']),
-});
-type GenerateLatexResumeInput = z.infer<typeof GenerateLatexResumeInputSchema>;
-
-const GenerateLatexResumeOutputSchema = z.object({
-  latexCode: z.string().describe('The full LaTeX source code for the generated resume.'),
-});
-type GenerateLatexResumeOutput = z.infer<typeof GenerateLatexResumeOutputSchema>;
+import {
+  GenerateLatexResumeInputSchema,
+  GenerateLatexResumeOutputSchema,
+  type GenerateLatexResumeInput,
+  type GenerateLatexResumeOutput,
+} from '@/ai/schemas/resume-generation';
 
 export async function generateLatexResume(input: GenerateLatexResumeInput): Promise<GenerateLatexResumeOutput> {
   return generateLatexResumeFlow(input);

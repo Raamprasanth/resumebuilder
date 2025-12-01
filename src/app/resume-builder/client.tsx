@@ -2,11 +2,11 @@
 
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { generateLatexResume } from '@/ai/flows/resume-generation';
 import {
-  generateLatexResume,
   GenerateLatexResumeInputSchema,
   type GenerateLatexResumeInput,
-} from '@/ai/flows/resume-generation';
+} from '@/ai/schemas/resume-generation';
 import { Button } from '@/components/ui/button';
 import {
   Card,
