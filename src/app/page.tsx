@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Briefcase, MapPin, Search, ChevronDown, Phone, Globe, User } from 'lucide-react';
+import { Briefcase, MapPin, Search, ChevronDown, User } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -44,7 +44,7 @@ export default function LandingPage() {
                         <Link href="/login">Sign In</Link>
                     </Button>
                     <Button asChild>
-                        <Link href="/signup">Post A Jobs</Link>
+                        <Link href="/signup">Sign Up</Link>
                     </Button>
                 </div>
             </div>
