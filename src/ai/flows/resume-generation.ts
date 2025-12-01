@@ -26,7 +26,7 @@ const EducationSchema = z.object({
   endDate: z.string(),
 });
 
-export const GenerateLatexResumeInputSchema = z.object({
+const GenerateLatexResumeInputSchema = z.object({
   fullName: z.string(),
   email: z.string().email(),
   phone: z.string(),
@@ -36,12 +36,12 @@ export const GenerateLatexResumeInputSchema = z.object({
   skills: z.string(),
   template: z.enum(['classic', 'modern', 'elegant']),
 });
-export type GenerateLatexResumeInput = z.infer<typeof GenerateLatexResumeInputSchema>;
+type GenerateLatexResumeInput = z.infer<typeof GenerateLatexResumeInputSchema>;
 
-export const GenerateLatexResumeOutputSchema = z.object({
+const GenerateLatexResumeOutputSchema = z.object({
   latexCode: z.string().describe('The full LaTeX source code for the generated resume.'),
 });
-export type GenerateLatexResumeOutput = z.infer<typeof GenerateLatexResumeOutputSchema>;
+type GenerateLatexResumeOutput = z.infer<typeof GenerateLatexResumeOutputSchema>;
 
 export async function generateLatexResume(input: GenerateLatexResumeInput): Promise<GenerateLatexResumeOutput> {
   return generateLatexResumeFlow(input);
