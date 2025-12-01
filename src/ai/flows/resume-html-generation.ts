@@ -214,8 +214,8 @@ Generate the HTML code based *only* on the selected template's structure.
     temperature: 0.2,
   },
   customHelpers: {
-      split: (str: string, separator: string) => (str || '').split(separator).map(s => s.trim()).filter(s => s),
-      trim: (str: string) => (str || '').trim(),
+    split: (str: string, separator: string) => (str || '').split(separator).map(s => s.trim()).filter(s => s),
+    trim: (str: string) => (str || '').trim(),
   },
 });
 
