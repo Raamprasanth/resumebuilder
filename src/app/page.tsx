@@ -8,6 +8,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
+import { Logo } from '@/components/ui/logo';
 
 const popularVacancies = [
   { title: 'Anesthesiologists', openings: 45904, domain: 'Medical' },
@@ -28,11 +29,11 @@ export default function LandingPage() {
   return (
     <div className="bg-background text-foreground">
       {/* Main Header */}
-      <header className="sticky top-0 bg-background/50 backdrop-blur-md z-10">
+      <header className="sticky top-0 bg-background/50 backdrop-blur-sm z-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             <Link href="/" className="flex items-center gap-2">
-              <Briefcase className="h-8 w-8 text-primary" />
+              <Logo className="h-8 w-8 text-primary" />
               <span className="font-bold text-2xl">
                 JobGenie
               </span>

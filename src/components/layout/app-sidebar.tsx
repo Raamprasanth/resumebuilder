@@ -41,6 +41,7 @@ import { Button } from '../ui/button';
 import { useFirebase } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
+import { Logo } from '../ui/logo';
 
 const primaryMenuItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -74,7 +75,7 @@ export function AppSidebar() {
     <>
       <SidebarHeader>
         <div className="flex items-center gap-2 p-2">
-            <Briefcase className="h-8 w-8 text-primary" />
+            <Logo className="h-8 w-8 text-primary" />
             <span className="font-bold text-2xl text-foreground">
                 JobGenie
             </span>
