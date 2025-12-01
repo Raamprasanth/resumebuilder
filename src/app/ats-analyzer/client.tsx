@@ -28,10 +28,21 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
-import { Loader2, Wand2, Upload, FileText, X } from 'lucide-react';
+import {
+  Loader2,
+  Wand2,
+  Upload,
+  FileText,
+  X,
+  ThumbsUp,
+  Lightbulb,
+  FileCheck,
+} from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_FILE_TYPES = [
@@ -228,17 +239,49 @@ export function AtsAnalyzerClient() {
           {analysisResult && (
             <div className="space-y-6">
               <div>
-                <Label className="text-lg font-semibold">
-                  Overall Score: {analysisResult.atsScore}%
-                </Label>
-                <Progress value={analysisResult.atsScore} className="mt-2" />
+                <div className="flex items-center justify-between mb-2">
+                  <Label className="text-lg font-semibold">
+                    Overall ATS Score
+                  </Label>
+                  <Badge variant={analysisResult.atsScore > 80 ? 'default' : 'secondary'}>
+                    {analysisResult.atsScore} / 100
+                  </Badge>
+                </div>
+                <Progress value={analysisResult.atsScore} className="h-3" />
+                 <p className="text-xs text-muted-foreground mt-1">
+                  This score estimates how well your resume is optimized for Applicant Tracking Systems.
+                </p>
               </div>
+
+              <Separator />
+
               <div>
-                <h3 className="text-lg font-semibold mb-2">
-                  Feedback & Suggestions
+                <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                  <FileCheck className="size-5 text-primary" /> Summary
                 </h3>
-                <div className="whitespace-pre-wrap rounded-md border p-4 bg-secondary/30 text-sm text-muted-foreground">
-                  {analysisResult.feedback}
+                <p className="text-sm text-muted-foreground">{analysisResult.summary}</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-3">
+                  <h3 className="font-semibold flex items-center gap-2 text-green-600">
+                    <ThumbsUp className="size-5" /> What you're doing well
+                  </h3>
+                  <ul className="space-y-2 list-disc pl-5 text-sm text-muted-foreground">
+                    {analysisResult.strengths.map((item, index) => (
+                      <li key={index}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="space-y-3">
+                  <h3 className="font-semibold flex items-center gap-2 text-amber-600">
+                    <Lightbulb className="size-5" /> Areas for improvement
+                  </h3>
+                  <ul className="space-y-2 list-disc pl-5 text-sm text-muted-foreground">
+                    {analysisResult.areasForImprovement.map((item, index) => (
+                      <li key={index}>{item}</li>
+                    ))}
+                  </ul>
                 </div>
               </div>
             </div>

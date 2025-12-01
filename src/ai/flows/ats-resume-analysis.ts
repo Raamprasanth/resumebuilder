@@ -21,9 +21,9 @@ const AnalyzeResumeInputSchema = z.object({
 export type AnalyzeResumeInput = z.infer<typeof AnalyzeResumeInputSchema>;
 
 const AnalyzeResumeOutputSchema = z.object({
-  feedback: z
-    .string()
-    .describe('General feedback on the resume, including structure, clarity, and potential improvements.'),
+  summary: z.string().describe('A brief, overall summary of the resume analysis.'),
+  strengths: z.array(z.string()).describe('A list of key strengths identified in the resume.'),
+  areasForImprovement: z.array(z.string()).describe('A list of areas where the resume can be improved.'),
   atsScore: z.number().describe('A score from 0 to 100 representing the overall quality and ATS-friendliness of the resume.'),
 });
 export type AnalyzeResumeOutput = z.infer<typeof AnalyzeResumeOutputSchema>;
@@ -37,10 +37,13 @@ const prompt = ai.definePrompt({
   input: {schema: AnalyzeResumeInputSchema},
   output: {schema: AnalyzeResumeOutputSchema},
   prompt: `You are an expert in resumes and Applicant Tracking Systems (ATS).
-  Analyze the following resume document and provide a general analysis.
-  Provide feedback on its structure, clarity, keyword optimization, and formatting for ATS parsing.
-  Give suggestions for improvement to increase its overall quality and ATS compatibility.
-  Also, provide an overall score from 0 to 100, representing how well-structured and optimized the resume is.
+  Analyze the following resume document.
+
+  Your analysis should be structured with the following sections:
+  1.  **Summary**: A brief, overall summary of the resume analysis.
+  2.  **Strengths**: Identify and list 3-4 key strengths of the resume.
+  3.  **Areas for Improvement**: Identify and list 3-4 actionable areas for improvement. Focus on structure, clarity, keyword optimization, and formatting for ATS parsing.
+  4.  **ATS Score**: Provide an overall score from 0 to 100, representing how well-structured and optimized the resume is for ATS.
 
   Resume:
   {{media url=resumeDataUri}}
