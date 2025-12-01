@@ -14,7 +14,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -27,22 +26,31 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Progress } from '@/components/ui/progress';
 import {
   Loader2,
   Wand2,
   Upload,
   FileText,
   X,
-  ThumbsUp,
-  Lightbulb,
-  FileCheck,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart"
+import {
+  PolarAngleAxis,
+  PolarGrid,
+  Radar,
+  RadarChart,
+  RadialBar,
+  RadialBarChart,
+} from "recharts"
+
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_FILE_TYPES = [
@@ -109,191 +117,203 @@ export function AtsAnalyzerClient() {
     }
   }
 
+  const getBadgeVariant = (badgeText: string) => {
+    switch (badgeText.toLowerCase()) {
+      case 'strong':
+        return 'default';
+      case 'good start':
+        return 'secondary';
+      default:
+        return 'destructive';
+    }
+  }
+
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>ATS Resume Analyzer</CardTitle>
-              <CardDescription>
-                Upload your resume to get an analysis of its strengths and
-                weaknesses.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <FormField
-                control={form.control}
-                name="resumeFile"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Your Resume</FormLabel>
-                    <FormControl>
-                      <Controller
-                        name="resumeFile"
-                        control={form.control}
-                        render={({ field: { onChange, onBlur, name, ref } }) => (
-                          <div className="relative">
-                            <Input
-                              id="resumeFile"
-                              type="file"
-                              className="sr-only"
-                              accept={ACCEPTED_FILE_TYPES.join(',')}
-                              onChange={(e) => onChange(e.target.files)}
-                              onBlur={onBlur}
-                              name={name}
-                              ref={ref}
-                              disabled={isLoading}
-                            />
-                            <Label
-                              htmlFor="resumeFile"
-                              className={cn(
-                                'flex min-h-[200px] cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed border-input bg-background p-4 text-center text-muted-foreground transition-colors hover:border-primary/50',
-                                {
-                                  'cursor-not-allowed opacity-50': isLoading,
-                                }
-                              )}
-                            >
-                              {!selectedFile ? (
-                                <>
-                                  <Upload className="mb-2 h-8 w-8" />
-                                  <p className="font-semibold">
-                                    Click to upload a file
-                                  </p>
-                                  <p className="text-xs">
-                                    PDF, DOC, or DOCX (max 5MB)
-                                  </p>
-                                </>
-                              ) : (
-                                <div className="flex flex-col items-center text-foreground">
-                                  <FileText className="mb-2 h-10 w-10 text-primary" />
-                                  <p className="font-semibold">
-                                    {selectedFile.name}
-                                  </p>
-                                  <p className="text-xs">
-                                    ({(selectedFile.size / 1024).toFixed(1)}{' '}
-                                    KB)
-                                  </p>
-                                </div>
-                              )}
-                            </Label>
-                            {selectedFile && !isLoading && (
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                className="absolute right-2 top-2 h-6 w-6 rounded-full"
-                                onClick={() => form.setValue('resumeFile', null, { shouldValidate: true })}
+    <div className="space-y-6">
+       <h1 className="text-3xl font-bold tracking-tight">Resume Review</h1>
+
+      {!analysisResult && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Upload Your Resume</CardTitle>
+            <CardDescription>
+              Get an instant analysis of your resume's strengths and weaknesses.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                 <FormField
+                  control={form.control}
+                  name="resumeFile"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Controller
+                          name="resumeFile"
+                          control={form.control}
+                          render={({ field: { onChange, onBlur, name, ref } }) => (
+                            <div className="relative">
+                              <Input
+                                id="resumeFile"
+                                type="file"
+                                className="sr-only"
+                                accept={ACCEPTED_FILE_TYPES.join(',')}
+                                onChange={(e) => onChange(e.target.files)}
+                                onBlur={onBlur}
+                                name={name}
+                                ref={ref}
+                                disabled={isLoading}
+                              />
+                              <Label
+                                htmlFor="resumeFile"
+                                className={cn(
+                                  'flex min-h-[200px] cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed border-input bg-background p-4 text-center text-muted-foreground transition-colors hover:border-primary/50',
+                                  {
+                                    'cursor-not-allowed opacity-50': isLoading,
+                                  }
+                                )}
                               >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            )}
-                          </div>
-                        )}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-            <CardFooter>
-              <Button
-                type="submit"
-                disabled={isLoading || !selectedFile}
-                className="w-full"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Analyzing...
-                  </>
-                ) : (
-                  <>
-                    <Wand2 className="mr-2 h-4 w-4" />
-                    Analyze
-                  </>
-                )}
-              </Button>
-            </CardFooter>
-          </Card>
-        </form>
-      </Form>
+                                {!selectedFile ? (
+                                  <>
+                                    <Upload className="mb-2 h-8 w-8" />
+                                    <p className="font-semibold">
+                                      Click to upload a file
+                                    </p>
+                                    <p className="text-xs">
+                                      PDF, DOC, or DOCX (max 5MB)
+                                    </p>
+                                  </>
+                                ) : (
+                                  <div className="flex flex-col items-center text-foreground">
+                                    <FileText className="mb-2 h-10 w-10 text-primary" />
+                                    <p className="font-semibold">
+                                      {selectedFile.name}
+                                    </p>
+                                    <p className="text-xs">
+                                      ({(selectedFile.size / 1024).toFixed(1)}{' '}
+                                      KB)
+                                    </p>
+                                  </div>
+                                )}
+                              </Label>
+                              {selectedFile && !isLoading && (
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  className="absolute right-2 top-2 h-6 w-6 rounded-full"
+                                  onClick={() => form.setValue('resumeFile', null, { shouldValidate: true })}
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              )}
+                            </div>
+                          )}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                 <Button
+                  type="submit"
+                  disabled={isLoading || !selectedFile}
+                  className="w-full"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Analyzing...
+                    </>
+                  ) : (
+                    <>
+                      <Wand2 className="mr-2 h-4 w-4" />
+                      Analyze Resume
+                    </>
+                  )}
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+      )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Analysis Report</CardTitle>
-          <CardDescription>
-            {isLoading
-              ? 'Generating your report...'
-              : 'Results of your resume analysis will appear here.'}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {isLoading && (
-            <div className="flex flex-col items-center justify-center space-y-4 min-h-[300px]">
-              <Loader2 className="h-10 w-10 animate-spin text-primary" />
-              <p className="text-muted-foreground">Running AI analysis...</p>
-            </div>
-          )}
-          {analysisResult && (
-            <div className="space-y-6">
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label className="text-lg font-semibold">
-                    Overall ATS Score
-                  </Label>
-                  <Badge variant={analysisResult.atsScore > 80 ? 'default' : 'secondary'}>
-                    {analysisResult.atsScore} / 100
-                  </Badge>
-                </div>
-                <Progress value={analysisResult.atsScore} className="h-3" />
-                 <p className="text-xs text-muted-foreground mt-1">
-                  This score estimates how well your resume is optimized for Applicant Tracking Systems.
-                </p>
+
+      {isLoading && (
+        <div className="flex flex-col items-center justify-center space-y-4 min-h-[300px]">
+          <Loader2 className="h-10 w-10 animate-spin text-primary" />
+          <p className="text-muted-foreground">Running AI analysis...</p>
+        </div>
+      )}
+
+      {analysisResult && (
+        <Card>
+          <CardHeader>
+             <div className="flex flex-col items-center gap-4 sm:flex-row">
+              <div className="h-40 w-40">
+                <ChartContainer
+                  config={{
+                    score: {
+                      label: "Score",
+                      color: "hsl(var(--primary))",
+                    },
+                  }}
+                  className="mx-auto aspect-square h-full w-full"
+                >
+                  <RadialBarChart
+                    data={[{ name: "Score", value: analysisResult.overallScore, fill: "hsl(var(--primary))" }]}
+                    startAngle={-270}
+                    endAngle={90}
+                    innerRadius="70%"
+                    outerRadius="100%"
+                  >
+                    <PolarAngleAxis
+                      type="number"
+                      domain={[0, 100]}
+                      tick={false}
+                    />
+                    <RadialBar
+                      dataKey="value"
+                      cornerRadius={10}
+                      background={{ fill: 'hsl(var(--muted))' }}
+                    />
+                     <text
+                      x="50%"
+                      y="50%"
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                      className="fill-foreground text-2xl font-bold"
+                    >
+                      {analysisResult.overallScore}/100
+                    </text>
+                  </RadialBarChart>
+                </ChartContainer>
               </div>
-
-              <Separator />
-
-              <div>
-                <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                  <FileCheck className="size-5 text-primary" /> Summary
-                </h3>
-                <p className="text-sm text-muted-foreground">{analysisResult.summary}</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-3">
-                  <h3 className="font-semibold flex items-center gap-2 text-green-600">
-                    <ThumbsUp className="size-5" /> What you're doing well
-                  </h3>
-                  <ul className="space-y-2 list-disc pl-5 text-sm text-muted-foreground">
-                    {analysisResult.strengths.map((item, index) => (
-                      <li key={index}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="space-y-3">
-                  <h3 className="font-semibold flex items-center gap-2 text-amber-600">
-                    <Lightbulb className="size-5" /> Areas for improvement
-                  </h3>
-                  <ul className="space-y-2 list-disc pl-5 text-sm text-muted-foreground">
-                    {analysisResult.areasForImprovement.map((item, index) => (
-                      <li key={index}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
+              <div className="flex flex-col gap-2">
+                <CardTitle className="text-3xl">Your Resume Score</CardTitle>
+                <CardDescription>
+                  This score is calculated based on the variables listed below.
+                </CardDescription>
               </div>
             </div>
-          )}
-          {!isLoading && !analysisResult && (
-            <div className="flex flex-col items-center justify-center text-center text-muted-foreground min-h-[300px] border-2 border-dashed rounded-lg">
-              <p>Your report is waiting.</p>
-              <p className="text-sm">Upload your resume to get started.</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+          </CardHeader>
+          <CardContent className="grid gap-4">
+             {analysisResult.scoreBreakdown.map((item) => (
+                <div key={item.category} className="flex items-center justify-between rounded-lg bg-muted/50 p-4">
+                    <div className="flex items-center gap-3">
+                        <p className="font-semibold">{item.category}</p>
+                         <Badge variant={getBadgeVariant(item.badge)}>{item.badge}</Badge>
+                    </div>
+                    <p className="font-bold text-lg">{item.score}/100</p>
+                </div>
+            ))}
+             <Button onClick={() => setAnalysisResult(null)} variant="outline" className="mt-4">
+                Analyze Another Resume
+            </Button>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

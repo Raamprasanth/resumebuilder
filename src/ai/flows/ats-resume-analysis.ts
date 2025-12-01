@@ -20,11 +20,16 @@ const AnalyzeResumeInputSchema = z.object({
 });
 export type AnalyzeResumeInput = z.infer<typeof AnalyzeResumeInputSchema>;
 
+const ScoreItemSchema = z.object({
+  category: z.string().describe("The category being scored (e.g., 'Tone & Style', 'Content')."),
+  score: z.number().min(0).max(100).describe('The score for this category, from 0 to 100.'),
+  badge: z.string().describe("A qualitative badge for the score (e.g., 'Strong', 'Good Start', 'Needs Improvement')."),
+});
+
+
 const AnalyzeResumeOutputSchema = z.object({
-  summary: z.string().describe('A brief, overall summary of the resume analysis.'),
-  strengths: z.array(z.string()).describe('A list of key strengths identified in the resume.'),
-  areasForImprovement: z.array(z.string()).describe('A list of areas where the resume can be improved.'),
-  atsScore: z.number().describe('A score from 0 to 100 representing the overall quality and ATS-friendliness of the resume.'),
+  overallScore: z.number().min(0).max(100).describe('The overall resume score from 0 to 100.'),
+  scoreBreakdown: z.array(ScoreItemSchema).describe('A breakdown of the score into different categories like Tone, Content, Structure, and Skills.'),
 });
 export type AnalyzeResumeOutput = z.infer<typeof AnalyzeResumeOutputSchema>;
 
@@ -36,14 +41,21 @@ const prompt = ai.definePrompt({
   name: 'atsResumeAnalysisPrompt',
   input: {schema: AnalyzeResumeInputSchema},
   output: {schema: AnalyzeResumeOutputSchema},
-  prompt: `You are an expert in resumes and Applicant Tracking Systems (ATS).
-  Analyze the following resume document.
+  prompt: `You are an expert resume reviewer and career coach.
+  Analyze the provided resume document and return a detailed scoring report.
 
-  Your analysis should be structured with the following sections:
-  1.  **Summary**: A brief, overall summary of the resume analysis.
-  2.  **Strengths**: Identify and list 3-4 key strengths of the resume.
-  3.  **Areas for Improvement**: Identify and list 3-4 actionable areas for improvement. Focus on structure, clarity, keyword optimization, and formatting for ATS parsing.
-  4.  **ATS Score**: Provide an overall score from 0 to 100, representing how well-structured and optimized the resume is for ATS.
+  Your analysis should be structured as a JSON object with two main keys:
+  1.  **overallScore**: A single integer from 0 to 100 representing the overall quality and ATS-friendliness of the resume.
+  2.  **scoreBreakdown**: An array of objects, where each object represents a specific analysis category. You must include the following four categories:
+      - 'Tone & Style'
+      - 'Content' (Clarity, impact, and use of action verbs)
+      - 'Structure' (Formatting, readability, and ATS parsing friendliness)
+      - 'Skills' (Relevance and presentation of skills)
+
+  For each item in the scoreBreakdown array, provide:
+  - **category**: The name of the category.
+  - **score**: An integer score from 0 to 100 for that category.
+  - **badge**: A short, qualitative assessment badge (e.g., "Strong", "Good Start", "Needs Improvement").
 
   Resume:
   {{media url=resumeDataUri}}
