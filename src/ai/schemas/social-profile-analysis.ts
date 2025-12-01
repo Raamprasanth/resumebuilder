@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 export const SocialProfileAnalysisInputSchema = z.object({
-  githubUrl: z.string().url().optional().describe("The URL of the user's GitHub profile."),
-  leetCodeUrl: z.string().url().optional().describe("The URL of the user's LeetCode profile."),
+  githubUrl: z.string().url().or(z.literal('')).optional().describe("The URL of the user's GitHub profile."),
+  leetCodeUrl: z.string().url().or(z.literal('')).optional().describe("The URL of the user's LeetCode profile."),
 });
 export type SocialProfileAnalysisInput = z.infer<typeof SocialProfileAnalysisInputSchema>;
 
