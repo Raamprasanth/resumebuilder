@@ -33,6 +33,8 @@ import {
   Upload,
   FileText,
   X,
+  CheckCircle2,
+  AlertTriangle,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Label } from '@/components/ui/label';
@@ -41,6 +43,12 @@ import { Badge } from '@/components/ui/badge';
 import { ChartContainer } from '@/components/ui/chart';
 import { PolarAngleAxis, RadialBar, RadialBarChart } from 'recharts';
 import { Separator } from '@/components/ui/separator';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_FILE_TYPES = [
@@ -254,7 +262,7 @@ export function AtsAnalyzerClient() {
 
       {analysisResult && (
         <div className="space-y-6">
-          <Card>
+           <Card>
             <CardHeader>
               <div className="flex flex-col items-center gap-4 sm:flex-row">
                 <div className="h-32 w-32 shrink-0">
@@ -312,29 +320,113 @@ export function AtsAnalyzerClient() {
               </div>
             </CardHeader>
             <CardContent className="space-y-2">
-              {analysisResult.scoreBreakdown.map((item, index) => (
-                <>
-                  <div key={item.category} className="flex items-center justify-between rounded-lg p-4 bg-muted/30 hover:bg-muted/60 transition-colors">
+               {analysisResult.scoreBreakdown.map((item, index) => (
+                <Card key={item.category} className="p-4">
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <p className="font-semibold">{item.category}</p>
                       <Badge variant={getBadgeVariant(item.badge)}>{item.badge}</Badge>
                     </div>
                     <p className={cn("font-bold text-lg", getScoreColor(item.score))}>{item.score}/100</p>
                   </div>
-                  {index < analysisResult.scoreBreakdown.length - 1 && <Separator />}
-                </>
+                 </Card>
               ))}
             </CardContent>
-            <CardFooter>
-                <Button
-                    onClick={() => setAnalysisResult(null)}
-                    variant="outline"
-                    className="w-full"
-                >
-                    Analyze Another Resume
-                </Button>
-            </CardFooter>
           </Card>
+          
+           <Card className="bg-green-950/20 border-green-500/30">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-3">
+                    <CheckCircle2 className="text-green-400" />
+                    ATS Score - {analysisResult.overallScore}/100
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div>
+                    <h3 className="font-semibold text-lg">{analysisResult.headline}</h3>
+                    <p className="text-muted-foreground">This score represents how well your resume is likely to perform in Applicant Tracking Systems used by employers.</p>
+                </div>
+                <div className="space-y-2">
+                    {analysisResult.feedback.map((fb, index) => (
+                        <div key={index} className="flex items-start gap-2">
+                            {fb.type === 'positive' ? (
+                                <CheckCircle2 className="size-5 shrink-0 text-green-400 mt-0.5" />
+                            ) : (
+                                <AlertTriangle className="size-5 shrink-0 text-amber-400 mt-0.5" />
+                            )}
+                            <p className={cn(
+                                "text-sm",
+                                fb.type === 'positive' ? 'text-green-100' : 'text-amber-100'
+                            )}>
+                                {fb.message}
+                            </p>
+                        </div>
+                    ))}
+                </div>
+                <p className="text-sm text-muted-foreground italic">{analysisResult.summary}</p>
+            </CardContent>
+          </Card>
+
+
+          <Accordion type="single" collapsible className="w-full">
+            {analysisResult.scoreBreakdown.map((item) => (
+              <AccordionItem value={item.category} key={item.category}>
+                <AccordionTrigger>
+                   <div className="flex items-center gap-3">
+                      <p className="font-semibold text-lg">{item.category}</p>
+                      <Badge variant={getBadgeVariant(item.badge)}>{item.badge}</Badge>
+                    </div>
+                    <p className={cn("font-bold text-lg", getScoreColor(item.score))}>{item.score}/100</p>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="grid md:grid-cols-2 gap-4 mb-4 text-sm">
+                    {item.detailedFeedback.map((fb, i) => (
+                      <div key={i} className="flex items-start gap-2">
+                        {fb.type === 'positive' ? (
+                          <CheckCircle2 className="size-4 shrink-0 text-green-400 mt-1" />
+                        ) : (
+                          <AlertTriangle className="size-4 shrink-0 text-amber-400 mt-1" />
+                        )}
+                        <span>{fb.title}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <Separator className="my-4" />
+
+                  <div className="space-y-4">
+                    {item.detailedFeedback.map((fb, i) => (
+                      <Card key={i} className={cn(
+                        'p-4',
+                         fb.type === 'positive' ? 'bg-green-950/20 border-green-500/20' : 'bg-amber-950/20 border-amber-500/20'
+                      )}>
+                        <div className="flex items-start gap-3">
+                          {fb.type === 'positive' ? (
+                              <CheckCircle2 className="size-6 shrink-0 text-green-400" />
+                            ) : (
+                              <AlertTriangle className="size-6 shrink-0 text-amber-400" />
+                            )}
+                          <div>
+                            <h4 className="font-semibold">{fb.title}</h4>
+                            <p className="text-sm text-muted-foreground">{fb.description}</p>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+
+          <Button
+              onClick={() => setAnalysisResult(null)}
+              variant="outline"
+              className="w-full"
+          >
+              Analyze Another Resume
+          </Button>
+
         </div>
       )}
     </div>
