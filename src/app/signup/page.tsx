@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useFirebase } from '@/firebase/provider';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, serverTimestamp } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -93,9 +93,19 @@ export default function SignupPage() {
     } catch (error) {
       console.error('Signup error:', error);
       let errorMessage = 'An unexpected error occurred. Please try again.';
-      if (error instanceof FirebaseError) {
-        if (error.code === 'auth/email-already-in-use') {
-          errorMessage = 'This email is already registered. Please try to log in.';
+       if (error instanceof FirebaseError) {
+        switch (error.code) {
+          case 'auth/email-already-in-use':
+            errorMessage =
+              'This email is already registered. Please try to log in.';
+            break;
+          case 'auth/network-request-failed':
+            errorMessage =
+              'A network error occurred. Please check your connection and ensure the app domain is authorized in your Firebase project settings.';
+            break;
+          default:
+            errorMessage = `An unexpected error occurred: ${error.message}`;
+            break;
         }
       }
       toast({
