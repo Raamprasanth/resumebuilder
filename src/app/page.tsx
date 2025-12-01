@@ -3,9 +3,6 @@ import {
   Briefcase,
   MapPin,
   Search,
-  Building,
-  User,
-  Plus,
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -36,10 +33,6 @@ const popularVacancies = [
 ];
 
 export default function LandingPage() {
-  const carouselImages = PlaceHolderImages.filter((p) =>
-    p.id.startsWith('carousel-')
-  );
-
   return (
     <div className="bg-white text-gray-800">
       {/* Main Header */}
@@ -119,41 +112,22 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Carousel Section */}
+        {/* Word Animation Section */}
         <section className="py-20">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Success Stories
-          </h2>
-          <Carousel
-            className="w-full max-w-4xl mx-auto"
-            opts={{
-              loop: true,
-            }}
-          >
-            <CarouselContent>
-              {carouselImages.map((image) => (
-                <CarouselItem key={image.id}>
-                  <div className="p-1">
-                    <Card>
-                      <CardContent className="flex aspect-video items-center justify-center p-0 rounded-lg overflow-hidden">
-                        <Image
-                          src={image.imageUrl}
-                          alt={image.description}
-                          width={1200}
-                          height={600}
-                          className="object-cover"
-                          data-ai-hint={image.imageHint}
-                        />
-                      </CardContent>
-                    </Card>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
+          <div className="flex justify-center items-center">
+            <h2 className="text-5xl font-bold text-center tracking-wider uppercase word-animation">
+              <span>J</span>
+              <span>o</span>
+              <span>b</span>
+              <span>G</span>
+              <span>e</span>
+              <span>n</span>
+              <span>i</span>
+              <span>e</span>
+            </h2>
+          </div>
         </section>
+        
 
         {/* Most Popular Vacancies */}
         <section className="py-20">
