@@ -57,47 +57,62 @@ export default function SignupPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     if (!auth || !firestore) {
-        toast({
-            title: 'Authentication Error',
-            description: 'Firebase services are not available. Please try again later.',
-            variant: 'destructive',
-        });
-        setIsLoading(false);
-        return;
+      toast({
+        title: 'Initialization Error',
+        description:
+          'Firebase services are not available. Please try again later.',
+        variant: 'destructive',
+      });
+      setIsLoading(false);
+      return;
     }
+
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        values.email,
+        values.password
+      );
       const user = userCredential.user;
 
       await updateProfile(user, {
-          displayName: `${values.firstName} ${values.lastName}`
+        displayName: `${values.firstName} ${values.lastName}`,
       });
 
       const userDocRef = doc(firestore, 'users', user.uid);
-      
-      setDocumentNonBlocking(userDocRef, {
-        id: user.uid,
-        email: values.email,
-        firstName: values.firstName,
-        lastName: values.lastName,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      }, { merge: true });
+
+      setDocumentNonBlocking(
+        userDocRef,
+        {
+          id: user.uid,
+          email: values.email,
+          firstName: values.firstName,
+          lastName: values.lastName,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true }
+      );
 
       toast({
         title: 'Account Created',
-        description: "Welcome to JobGenie!",
+        description: 'Welcome to JobGenie!',
       });
       router.push('/dashboard');
-
     } catch (error) {
       console.error('Signup error:', error);
       let errorMessage = 'An unexpected error occurred. Please try again.';
-       if (error instanceof FirebaseError) {
+      if (error instanceof FirebaseError) {
         switch (error.code) {
           case 'auth/email-already-in-use':
             errorMessage =
               'This email is already registered. Please try to log in.';
+            break;
+          case 'auth/invalid-email':
+            errorMessage = 'Please enter a valid email address.';
+            break;
+          case 'auth/weak-password':
+            errorMessage = 'The password is too weak. Please use at least 6 characters.';
             break;
           case 'auth/network-request-failed':
             errorMessage =
@@ -131,31 +146,39 @@ export default function SignupPage() {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                 <FormField
-                    control={form.control}
-                    name="firstName"
-                    render={({ field }) => (
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
                     <FormItem>
-                        <FormLabel>First Name</FormLabel>
-                        <FormControl>
-                        <Input placeholder="John" {...field} disabled={isLoading} />
-                        </FormControl>
-                        <FormMessage />
+                      <FormLabel>First Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="John"
+                          {...field}
+                          disabled={isLoading}
+                        />
+                      </FormControl>
+                      <FormMessage />
                     </FormItem>
-                    )}
+                  )}
                 />
-                 <FormField
-                    control={form.control}
-                    name="lastName"
-                    render={({ field }) => (
+                <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Last Name</FormLabel>
-                        <FormControl>
-                        <Input placeholder="Doe" {...field} disabled={isLoading} />
-                        </FormControl>
-                        <FormMessage />
+                      <FormLabel>Last Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Doe"
+                          {...field}
+                          disabled={isLoading}
+                        />
+                      </FormControl>
+                      <FormMessage />
                     </FormItem>
-                    )}
+                  )}
                 />
               </div>
               <FormField
