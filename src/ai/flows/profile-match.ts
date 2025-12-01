@@ -14,10 +14,12 @@ import { z } from 'zod';
 const ProfileMatchInputSchema = z.object({
   resumeContent: z
     .string()
-    .describe('The full text content of the user\'s resume.'),
-  jobDescription: z
+    .describe("The full text content of the user's resume."),
+  jobKeywords: z
     .string()
-    .describe('The full text of the target job description.'),
+    .describe(
+      'Keywords describing the target job, e.g., "Senior React Developer, Next.js, New York".'
+    ),
 });
 export type ProfileMatchInput = z.infer<typeof ProfileMatchInputSchema>;
 
@@ -39,6 +41,9 @@ const ProfileMatchOutputSchema = z.object({
     .describe(
       'A list of 2-3 areas where the resume could be improved or tailored to better match the job.'
     ),
+  generatedJobDescription: z
+    .string()
+    .describe('The fictional job description that was generated based on the user keywords and used for the analysis.')
 });
 export type ProfileMatchOutput = z.infer<typeof ProfileMatchOutputSchema>;
 
@@ -53,21 +58,27 @@ const prompt = ai.definePrompt({
   input: { schema: ProfileMatchInputSchema },
   output: { schema: ProfileMatchOutputSchema },
   prompt: `You are an expert career coach and resume analyst.
-  Your task is to analyze a user's resume against a target job description and provide a match report.
+  Your task is to perform a two-step process:
 
-  - **Match Score**: Provide a score from 0-100 indicating the strength of the match.
-  - **Strengths**: Identify 2-3 key skills or experiences from the resume that are highly relevant to the job.
-  - **Areas for Improvement**: Suggest 2-3 ways the user could better tailor their resume to this specific job description.
+  Step 1: Generate a realistic but fictional job description based on the user-provided keywords.
+  Step 2: Analyze the user's resume against that generated job description and provide a match report.
 
-  Resume Content:
+  **User's Job Keywords:**
+  ---
+  {{{jobKeywords}}}
+  ---
+
+  **User's Resume Content:**
   ---
   {{{resumeContent}}}
   ---
 
-  Job Description:
-  ---
-  {{{jobDescription}}}
-  ---
+  **Your Output:**
+  Return a JSON object with the following structure:
+  - **generatedJobDescription**: The full, fictional job description you created.
+  - **matchScore**: A score from 0-100 indicating the strength of the match between the resume and the generated description.
+  - **strengths**: Identify 2-3 key skills or experiences from the resume that are highly relevant to the job.
+  - **areasForImprovement**: Suggest 2-3 ways the user could better tailor their resume to this specific job.
 `,
   config: {
     temperature: 0.3,

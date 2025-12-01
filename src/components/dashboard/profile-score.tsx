@@ -31,6 +31,7 @@ import {
   Upload,
   FileText,
   X,
+  Sparkles,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -43,6 +44,12 @@ import { Separator } from '@/components/ui/separator';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 import { cn } from '@/lib/utils';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '../ui/accordion';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_FILE_TYPES = [
@@ -63,9 +70,9 @@ const formSchema = z.object({
       (files) => ACCEPTED_FILE_TYPES.includes(files?.[0]?.type),
       '.pdf, .doc, and .docx files are accepted.'
     ),
-  jobDescription: z
+  jobKeywords: z
     .string()
-    .min(100, { message: 'Job description must be at least 100 characters.' }),
+    .min(10, { message: 'Job keywords must be at least 10 characters.' }),
 });
 
 const fileToText = (file: File): Promise<string> => {
@@ -87,7 +94,7 @@ export function ProfileScore() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      jobDescription: '',
+      jobKeywords: '',
     },
   });
 
@@ -101,7 +108,7 @@ export function ProfileScore() {
       const resumeContent = await fileToText(values.resumeFile[0]);
       const result = await generateProfileMatch({
         resumeContent: resumeContent,
-        jobDescription: values.jobDescription
+        jobKeywords: values.jobKeywords
       });
       setMatchResult(result);
     } catch (error) {
@@ -117,6 +124,25 @@ export function ProfileScore() {
     }
   }
 
+  // A simple markdown-to-HTML renderer
+const Markdown = ({ content }: { content: string }) => {
+    const html = content
+      .replace(/^### (.*$)/gim, '<h3 class="text-lg font-semibold mt-4 mb-2">$1</h3>')
+      .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold mt-6 mb-3">$1</h2>')
+      .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-extrabold mt-8 mb-4">$1</h1>')
+      .replace(/\*\*(.*)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*)\*/g, '<em>$1</em>')
+      .replace(/^- (.*$)/gim, '<li class="ml-4 list-disc">$1</li>')
+       // This is a bit of a hack to wrap list items in a <ul>
+      .replace(/(<br \/>)?\n/g, '<br />')
+      .replace(/(<li.*<\/li>)(?!<li)/gs, '<ul>$1</ul>')
+      .replace(/<\/ul><br \/><ul>/g, '');
+
+
+  return <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: html }} />;
+};
+
+
   return (
     <Card>
       <CardHeader>
@@ -125,7 +151,7 @@ export function ProfileScore() {
           Profile Match Score
         </CardTitle>
         <CardDescription>
-          Upload your resume and paste a job description to see how well you match.
+          Upload your resume and provide job keywords to see how well you match.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -208,16 +234,16 @@ export function ProfileScore() {
               />
               <FormField
                 control={form.control}
-                name="jobDescription"
+                name="jobKeywords"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="flex flex-col">
                     <FormLabel className="flex items-center gap-2">
-                      <FileCheck className="size-4" /> Target Job Description
+                      <Sparkles className="size-4" /> Target Job Keywords
                     </FormLabel>
-                    <FormControl>
+                    <FormControl className="flex-grow">
                       <Textarea
-                        placeholder="Paste the full job description you are interested in..."
-                        className="h-48"
+                        placeholder="e.g., Senior Product Manager, SaaS, Remote, San Francisco"
+                        className="h-full min-h-32"
                         {...field}
                       />
                     </FormControl>
@@ -247,7 +273,7 @@ export function ProfileScore() {
           <div className="mt-6 flex flex-col items-center justify-center space-y-4 min-h-[200px]">
             <Loader2 className="h-10 w-10 animate-spin text-primary" />
             <p className="text-muted-foreground">
-              Comparing your profile to the job...
+              Generating job and comparing profile...
             </p>
           </div>
         )}
@@ -266,12 +292,24 @@ export function ProfileScore() {
               </div>
               <Progress value={matchResult.matchScore} className="h-3" />
               <p className="text-xs text-muted-foreground mt-1">
-                This score estimates how well your profile aligns with the job
+                This score estimates how well your profile aligns with the AI-generated job
                 description.
               </p>
             </div>
 
             <Separator />
+            
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="item-1">
+                <AccordionTrigger>View Generated Job Description</AccordionTrigger>
+                <AccordionContent>
+                  <div className="p-4 border rounded-md bg-muted/20">
+                     <Markdown content={matchResult.generatedJobDescription} />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-3">
