@@ -50,7 +50,7 @@ service cloud.firestore {
      * @param userId The user ID from the document path.
      */
     function isExistingOwner(userId) {
-      return isOwner(userId) && resource != null;
+      return isOwner(userId) && exists(/databases/$(database)/documents/users/$(userId));
     }
 
     /**
@@ -167,3 +167,4 @@ service cloud.firestore {
     }
   }
 }
+    

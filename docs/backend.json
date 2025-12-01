@@ -44,6 +44,105 @@
         "updatedAt"
       ]
     },
+    "UserProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserProfile",
+      "type": "object",
+      "description": "Represents a user's editable profile information.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user, matching the auth UID."
+        },
+        "email": {
+          "type": "string",
+          "description": "User's email address.",
+          "format": "email"
+        },
+        "firstName": {
+          "type": "string",
+          "description": "User's first name."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "User's last name."
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "User's phone number."
+        },
+        "profileSummary": {
+          "type": "string",
+          "description": "A brief summary of the user's professional background."
+        },
+        "personalWebsite": {
+          "type": "string",
+          "description": "URL of the user's personal website or portfolio.",
+          "format": "uri"
+        },
+        "nationality": {
+          "type": "string",
+          "description": "User's nationality."
+        },
+        "dateOfBirth": {
+          "type": "string",
+          "description": "User's date of birth.",
+          "format": "date"
+        },
+        "gender": {
+          "type": "string",
+          "description": "User's gender."
+        },
+        "links": {
+          "type": "object",
+          "description": "Links to the user's social and professional profiles.",
+          "properties": {
+            "linkedIn": { "type": "string", "format": "uri" },
+            "github": { "type": "string", "format": "uri" },
+            "stackOverflow": { "type": "string", "format": "uri" },
+            "leetCode": { "type": "string", "format": "uri" }
+          }
+        },
+        "experiences": {
+          "type": "array",
+          "description": "User's professional experience.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "jobTitle": { "type": "string" },
+              "company": { "type": "string" },
+              "startDate": { "type": "string" },
+              "endDate": { "type": "string" },
+              "jobDescription": { "type": "string" }
+            }
+          }
+        },
+        "education": {
+          "type": "array",
+          "description": "User's educational background.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "degree": { "type": "string" },
+              "university": { "type": "string" },
+              "startDate": { "type": "string" },
+              "endDate": { "type": "string" }
+            }
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the user account was created.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the user account was last updated.",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "email", "firstName", "lastName"]
+    },
     "ATSAnalysis": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "ATSAnalysis",
@@ -354,11 +453,11 @@
       {
         "path": "/users/{userId}",
         "definition": {
-          "entityName": "User",
+          "entityName": "UserProfile",
           "schema": {
-            "$ref": "#/backend/entities/User"
+            "$ref": "#/backend/entities/UserProfile"
           },
-          "description": "Stores user profile information.  Path-based ownership ensures only the user can access their profile data.",
+          "description": "Stores user profile information. Path-based ownership ensures only the user can access their profile data.",
           "params": [
             {
               "name": "userId",
@@ -515,4 +614,5 @@
     "reasoning": "The Firestore data structure is designed to ensure security, scalability, and ease of debugging, adhering to the core design principles of Authorization Independence, Clarity of Intent, DBAC (Database-Based Access Control), and QAPs (Rules are not Filters). Authorization Independence is achieved through denormalization. For instance, any data requiring user-specific access is nested under `/users/{userId}`, ensuring that access control can be enforced without needing to read data from other documents. Collaborative data, if any, will leverage membership maps, denormalizing user roles within the document itself. Structural Segregation is maintained by ensuring that each collection houses documents with similar security requirements. This avoids complex rule logic and allows for straightforward, secure `list` operations (QAPs). Access Modeling uses path-based ownership (`/users/{userId}/{entity}`) for private user data and existence checks for global roles. Data Clarity and Predictability are achieved through explicit state modeling using a `status` field, predictable schemas, and consistent naming conventions."
   }
 }
+
     

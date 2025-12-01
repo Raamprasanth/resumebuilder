@@ -90,6 +90,21 @@ export default function SignupPage() {
           lastName: values.lastName,
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
+          // Initialize new profile fields
+          phoneNumber: '',
+          profileSummary: '',
+          personalWebsite: '',
+          nationality: '',
+          dateOfBirth: '',
+          gender: '',
+          links: {
+            linkedIn: '',
+            github: '',
+            stackOverflow: '',
+            leetCode: '',
+          },
+          experiences: [],
+          education: [],
         },
         { merge: true }
       );
@@ -237,3 +252,5 @@ export default function SignupPage() {
     </div>
   );
 }
+
+    
