@@ -28,7 +28,7 @@ export default function LandingPage() {
   return (
     <div className="bg-background text-foreground">
       {/* Main Header */}
-      <header className="sticky top-0 bg-background/80 backdrop-blur-sm z-10 border-b">
+      <header className="sticky top-0 bg-background/50 backdrop-blur-md z-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             <Link href="/" className="flex items-center gap-2">
