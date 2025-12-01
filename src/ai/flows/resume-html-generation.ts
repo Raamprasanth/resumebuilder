@@ -54,7 +54,7 @@ The user has selected the '{{{template}}}' template.
 **Follow the structure for the selected '{{{template}}}' template VERY CAREFULLY.**
 
 **IF template is 'classic' USE THIS STRUCTURE:**
-\'\'\'html
+'''html
 <div id="resume-container" style="font-family: Georgia, serif; line-height: 1.6; color: #333; background-color: #fff; width: 210mm; min-height: 297mm; padding: 25mm;">
     <div style="text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
         <h1 style="margin: 0; font-size: 36px; font-weight: bold;">{{{fullName}}}</h1>
@@ -102,11 +102,11 @@ The user has selected the '{{{template}}}' template.
         <p style="font-size: 14px;">{{{skills}}}</p>
     </div>
 </div>
-\'\'\'
+'''
 
 
 **IF template is 'modern' USE THIS STRUCTURE:**
-\'\'\'html
+'''html
 <div id="resume-container" style="display: flex; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f8f9fa; width: 210mm; min-height: 297mm;">
     <div style="width: 35%; background-color: #4A5568; color: #fff; padding: 30px;">
         <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 20px;">{{{fullName}}}</h1>
@@ -158,11 +158,11 @@ The user has selected the '{{{template}}}' template.
         </div>
     </div>
 </div>
-\'\'\'
+'''
 
 
 **IF template is 'elegant' USE THIS STRUCTURE:**
-\'\'\'html
+'''html
 <div id="resume-container" style="font-family: 'Garamond', 'Baskerville', 'Times New Roman', serif; line-height: 1.5; color: #1a1a1a; background-color: #fff; width: 210mm; min-height: 297mm; padding: 25mm 30mm;">
     <h1 style="font-size: 48px; font-weight: normal; text-align: center; letter-spacing: 2px; margin: 0 0 5px 0;">{{{fullName}}}</h1>
     <p style="text-align: center; font-size: 14px; margin-bottom: 30px;">{{{email}}} &nbsp;&bull;&nbsp; {{{phone}}}</p>
@@ -206,7 +206,7 @@ The user has selected the '{{{template}}}' template.
         </div>
     </div>
 </div>
-\'\'\'
+'''
 
 Generate the HTML code based *only* on the selected template's structure.
 `,
