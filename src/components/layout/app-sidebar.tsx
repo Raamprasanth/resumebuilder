@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   FileText,
-  LayoutDashboard,
+  Search,
   Map,
   Briefcase,
   LogOut,
@@ -44,7 +44,7 @@ import { useRouter } from 'next/navigation';
 import { Logo } from '../ui/logo';
 
 const primaryMenuItems = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/dashboard', label: 'Find Job', icon: Search },
   { href: '/ats-analyzer', label: 'ATS Analyzer', icon: FileText },
   { href: '/resume-builder', label: 'Resume Builder', icon: Briefcase },
   { href: '/career-roadmap', label: 'Career Roadmap', icon: Map },
