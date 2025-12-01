@@ -36,9 +36,6 @@ const formSchema = z.object({
   resumeText: z.string().min(100, {
     message: 'Resume must be at least 100 characters.',
   }),
-  jobDescription: z.string().min(100, {
-    message: 'Job description must be at least 100 characters.',
-  }),
 });
 
 export function AtsAnalyzerClient() {
@@ -51,7 +48,6 @@ export function AtsAnalyzerClient() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       resumeText: '',
-      jobDescription: '',
     },
   });
 
@@ -82,8 +78,8 @@ export function AtsAnalyzerClient() {
             <CardHeader>
               <CardTitle>ATS Resume Analyzer</CardTitle>
               <CardDescription>
-                Paste your resume and a job description to see how well you
-                match.
+                Paste your resume to get an analysis of its strengths and
+                weaknesses.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -96,24 +92,7 @@ export function AtsAnalyzerClient() {
                     <FormControl>
                       <Textarea
                         placeholder="Paste your full resume text here..."
-                        className="min-h-[200px]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="jobDescription"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Job Description</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Paste the full job description here..."
-                        className="min-h-[200px]"
+                        className="min-h-[400px]"
                         {...field}
                       />
                     </FormControl>
@@ -161,7 +140,7 @@ export function AtsAnalyzerClient() {
             <div className="space-y-6">
               <div>
                 <Label className="text-lg font-semibold">
-                  ATS Score: {analysisResult.atsScore}%
+                  Overall Score: {analysisResult.atsScore}%
                 </Label>
                 <Progress value={analysisResult.atsScore} className="mt-2" />
               </div>
@@ -179,7 +158,7 @@ export function AtsAnalyzerClient() {
             <div className="flex flex-col items-center justify-center text-center text-muted-foreground min-h-[300px] border-2 border-dashed rounded-lg">
               <p>Your report is waiting.</p>
               <p className="text-sm">
-                Fill out the form and click "Analyze".
+                Paste your resume and click "Analyze".
               </p>
             </div>
           )}

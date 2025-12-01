@@ -1,9 +1,9 @@
 'use server';
 
 /**
- * @fileOverview A flow for analyzing a resume against a job description for ATS optimization.
+ * @fileOverview A flow for analyzing a resume.
  *
- * - analyzeResume - Analyzes the resume against the job description and provides feedback.
+ * - analyzeResume - Analyzes the resume and provides feedback.
  * - AnalyzeResumeInput - The input type for the analyzeResume function.
  * - AnalyzeResumeOutput - The return type for the analyzeResume function.
  */
@@ -15,17 +15,14 @@ const AnalyzeResumeInputSchema = z.object({
   resumeText: z
     .string()
     .describe('The text content of the resume.'),
-  jobDescription: z
-    .string()
-    .describe('The text content of the job description.'),
 });
 export type AnalyzeResumeInput = z.infer<typeof AnalyzeResumeInputSchema>;
 
 const AnalyzeResumeOutputSchema = z.object({
   feedback: z
     .string()
-    .describe('Feedback on keyword matching and formatting for ATS optimization.'),
-  atsScore: z.number().describe('A score representing how well the resume is optimized for ATS.'),
+    .describe('General feedback on the resume, including structure, clarity, and potential improvements.'),
+  atsScore: z.number().describe('A score from 0 to 100 representing the overall quality and ATS-friendliness of the resume.'),
 });
 export type AnalyzeResumeOutput = z.infer<typeof AnalyzeResumeOutputSchema>;
 
@@ -37,17 +34,15 @@ const prompt = ai.definePrompt({
   name: 'atsResumeAnalysisPrompt',
   input: {schema: AnalyzeResumeInputSchema},
   output: {schema: AnalyzeResumeOutputSchema},
-  prompt: `You are an expert in Applicant Tracking Systems (ATS) and resume optimization.
-  Analyze the following resume against the job description provided.
-  Provide feedback on keyword matching, formatting issues that might hinder ATS parsing,
-  and suggestions for improvement to increase the resume's ATS compatibility.
-  Also, provide an ATS score from 0 to 100, representing how well the resume is optimized for ATS.
+  prompt: `You are an expert in resumes and Applicant Tracking Systems (ATS).
+  Analyze the following resume and provide a general analysis.
+  Provide feedback on its structure, clarity, keyword optimization, and formatting for ATS parsing.
+  Give suggestions for improvement to increase its overall quality and ATS compatibility.
+  Also, provide an overall score from 0 to 100, representing how well-structured and optimized the resume is.
 
   Resume:
   {{resumeText}}
-
-  Job Description:
-  {{jobDescription}}`,
+`,
 });
 
 const analyzeResumeFlow = ai.defineFlow(
