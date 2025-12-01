@@ -26,10 +26,17 @@ const ScoreItemSchema = z.object({
   badge: z.string().describe("A qualitative badge for the score (e.g., 'Strong', 'Good Start', 'Needs Improvement')."),
 });
 
+const FeedbackItemSchema = z.object({
+  type: z.enum(['positive', 'negative']),
+  message: z.string(),
+});
 
 const AnalyzeResumeOutputSchema = z.object({
   overallScore: z.number().min(0).max(100).describe('The overall resume score from 0 to 100.'),
   scoreBreakdown: z.array(ScoreItemSchema).describe('A breakdown of the score into different categories like Tone, Content, Structure, and Skills.'),
+  headline: z.string().describe('A short, encouraging headline for the feedback card (e.g., "Great Job!").'),
+  feedback: z.array(FeedbackItemSchema).describe('A list of specific feedback points, both positive and negative.'),
+  summary: z.string().describe('A concluding sentence to encourage the user to keep refining their resume.'),
 });
 export type AnalyzeResumeOutput = z.infer<typeof AnalyzeResumeOutputSchema>;
 
@@ -41,21 +48,17 @@ const prompt = ai.definePrompt({
   name: 'atsResumeAnalysisPrompt',
   input: {schema: AnalyzeResumeInputSchema},
   output: {schema: AnalyzeResumeOutputSchema},
-  prompt: `You are an expert resume reviewer and career coach.
-  Analyze the provided resume document and return a detailed scoring report.
+  prompt: `You are an expert resume reviewer and career coach specializing in ATS (Applicant Tracking Systems).
+  Analyze the provided resume document and return a detailed scoring and feedback report.
 
-  Your analysis should be structured as a JSON object with two main keys:
+  Your analysis should be structured as a JSON object with the following keys:
   1.  **overallScore**: A single integer from 0 to 100 representing the overall quality and ATS-friendliness of the resume.
-  2.  **scoreBreakdown**: An array of objects, where each object represents a specific analysis category. You must include the following four categories:
-      - 'Tone & Style'
-      - 'Content' (Clarity, impact, and use of action verbs)
-      - 'Structure' (Formatting, readability, and ATS parsing friendliness)
-      - 'Skills' (Relevance and presentation of skills)
-
-  For each item in the scoreBreakdown array, provide:
-  - **category**: The name of the category.
-  - **score**: An integer score from 0 to 100 for that category.
-  - **badge**: A short, qualitative assessment badge (e.g., "Strong", "Good Start", "Needs Improvement").
+  2.  **scoreBreakdown**: An array of objects for specific analysis categories. You must include these four categories: 'Tone & Style', 'Content', 'Structure', and 'Skills'. For each, provide a 'category', a 'score' (0-100), and a 'badge' ("Strong", "Good Start", "Needs Improvement").
+  3.  **headline**: A short, encouraging headline for the feedback card (e.g., "Great Job!", "A Solid Foundation").
+  4.  **feedback**: An array of 3-5 specific, actionable feedback points. For each point, provide:
+      - **type**: 'positive' for things done well, or 'negative' for areas of improvement.
+      - **message**: The feedback text itself (e.g., "Good use of relevant keywords for the target position" or "Future internship dates may confuse ATS systems").
+  5.  **summary**: A brief, concluding sentence to encourage refinement.
 
   Resume:
   {{media url=resumeDataUri}}
