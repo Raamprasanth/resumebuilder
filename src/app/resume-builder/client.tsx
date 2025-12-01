@@ -2,10 +2,10 @@
 
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { generateLatexResume } from '@/ai/flows/resume-generation';
+import { generateHtmlResume } from '@/ai/flows/resume-html-generation';
 import {
-  GenerateLatexResumeInputSchema,
-  type GenerateLatexResumeInput,
+  GenerateResumeInputSchema,
+  type GenerateResumeInput,
 } from '@/ai/schemas/resume-generation';
 import { Button } from '@/components/ui/button';
 import {
@@ -35,7 +35,7 @@ import {
   PlusCircle,
   Trash2,
   Loader2,
-  Wand2,
+  FileDown,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
@@ -43,8 +43,10 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { Label } from '@/components/ui/label';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
-const formSchema = GenerateLatexResumeInputSchema;
+const formSchema = GenerateResumeInputSchema;
 
 const templateOptions = [
   {
@@ -71,7 +73,7 @@ export function ResumeBuilderClient() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const form = useForm<GenerateLatexResumeInput>({
+  const form = useForm<GenerateResumeInput>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       fullName: 'John Doe',
@@ -118,55 +120,84 @@ export function ResumeBuilderClient() {
     name: 'education',
   });
 
-  async function onDownload(values: GenerateLatexResumeInput) {
+  const onDownloadPDF = async (values: GenerateResumeInput) => {
     setIsLoading(true);
     try {
-      const result = await generateLatexResume(values);
-      const blob = new Blob([result.latexCode], { type: 'text/x-latex' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `resume-${values.template}.tex`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      const { htmlContent } = await generateHtmlResume(values);
+
+      // Create a hidden element to render the HTML
+      const renderContainer = document.createElement('div');
+      renderContainer.style.position = 'absolute';
+      renderContainer.style.left = '-9999px';
+      document.body.appendChild(renderContainer);
+      renderContainer.innerHTML = htmlContent;
+      
+      const resumeElement = document.getElementById('resume-container');
+      if (!resumeElement) {
+        throw new Error('Could not find resume content to render.');
+      }
+      
+      const canvas = await html2canvas(resumeElement, {
+        scale: 2, // Higher scale for better quality
+        useCORS: true,
+      });
+      
+      const imgData = canvas.toDataURL('image/png');
+      
+      // A4 dimensions in mm: 210 x 297
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+      });
+      
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const canvasWidth = canvas.width;
+      const canvasHeight = canvas.height;
+      const ratio = canvasWidth / canvasHeight;
+      const height = pdfWidth / ratio;
+      
+      // Check if content exceeds one page
+      if (height > pdfHeight) {
+          console.warn("Content exceeds PDF page height. Consider a multi-page solution for longer resumes.");
+      }
+
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, height);
+      pdf.save(`resume-${values.template}.pdf`);
+
+      document.body.removeChild(renderContainer);
+
       toast({
         title: 'Download Started',
-        description: 'Your LaTeX resume file is downloading.',
+        description: 'Your PDF resume is downloading.',
       });
+
     } catch (error) {
-      console.error('Error generating resume:', error);
+      console.error('Error generating PDF resume:', error);
       toast({
         title: 'Generation Failed',
         description:
-          'There was an error generating your resume. Please try again.',
+          'There was an error generating your PDF. Please try again.',
         variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
     }
   }
-  
-  function onDownloadPDF() {
-    toast({
-      title: 'Feature in development',
-      description: 'PDF download is not yet implemented.',
-    });
-  }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>LaTeX Resume Builder</CardTitle>
+        <CardTitle>AI Resume Builder</CardTitle>
         <CardDescription>
           Fill in your details, choose a template, and generate a professional
-          resume.
+          PDF resume.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onDownload)} className="space-y-8">
+          <form onSubmit={form.handleSubmit(onDownloadPDF)} className="space-y-8">
             <FormField
               control={form.control}
               name="template"
@@ -514,20 +545,13 @@ export function ResumeBuilderClient() {
             </Tabs>
 
             <div className="flex justify-end space-x-4 pt-4 border-t">
-              <Button
-                variant="secondary"
-                type="submit"
-                disabled={isLoading}
-              >
-                {isLoading ? (
+              <Button type="submit" disabled={isLoading}>
+                 {isLoading ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
-                  <Download className="mr-2 h-4 w-4" />
+                  <FileDown className="mr-2 h-4 w-4" />
                 )}
-                Download LaTeX
-              </Button>
-              <Button type="button" onClick={onDownloadPDF}>
-                <Download className="mr-2 h-4 w-4" /> Download PDF
+                Download PDF
               </Button>
             </div>
           </form>
