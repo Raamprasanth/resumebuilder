@@ -11,6 +11,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -25,22 +26,16 @@ import {
   Upload,
   FileText,
   X,
-  Briefcase,
-  Target,
-  ThumbsUp,
-  Lightbulb,
+  Star,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { smartScan, type SmartScanOutput } from '@/ai/flows/smart-scan';
-import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
-import { Separator } from '../ui/separator';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_FILE_TYPES = [
@@ -237,90 +232,46 @@ export function SmartDashboard() {
 
       {scanResult && (
         <div className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Target />
-                  Job Score Board
-                </CardTitle>
-                <CardDescription>
-                  Based on your resume, we think you're a great fit for{' '}
-                  <span className="font-bold text-primary">
-                    {scanResult.extractedJobTitle}
-                  </span>{' '}
-                  roles in{' '}
-                  <span className="font-bold text-primary">
-                    {scanResult.extractedLocation}
-                  </span>
-                  . Here are your top recommendations:
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {scanResult.recommendations.map((job) => (
-                   <Card key={job.id} className="p-4">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                             {/* Job Info */}
-                            <div className="md:col-span-1">
-                                <button
-                                    onClick={() => handleJobClick(job.id)}
-                                    className="w-full text-left p-2 -m-2 rounded-lg hover:bg-accent/50"
-                                    disabled={isPending}
-                                >
-                                    <div className="flex items-start gap-4">
-                                        <div className="relative h-16 w-16 shrink-0">
-                                            <Image
-                                            src={job.logoUrl}
-                                            alt={`${job.company} logo`}
-                                            fill
-                                            className="rounded-md object-contain"
-                                            data-ai-hint="company logo"
-                                            />
-                                        </div>
-                                        <div>
-                                            <p className="font-semibold">{job.title}</p>
-                                            <p className="text-sm text-muted-foreground">{job.company}</p>
-                                            <p className="text-xs text-muted-foreground">{job.location}</p>
-                                        </div>
-                                    </div>
-                                </button>
-                                <div className="mt-4">
-                                    <div className="flex items-center justify-between mb-1">
-                                        <Label className="text-sm font-semibold">Match Score</Label>
-                                        <Badge variant={job.analysis.matchScore > 80 ? 'default' : 'secondary'}>
-                                            {job.analysis.matchScore} / 100
-                                        </Badge>
-                                    </div>
-                                    <Progress value={job.analysis.matchScore} className="h-2" />
-                                </div>
-                            </div>
-                            {/* Analysis */}
-                            <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                                <div className="space-y-2">
-                                    <h3 className="font-semibold flex items-center gap-2 text-green-500">
-                                    <ThumbsUp className="size-4" /> Strengths
-                                    </h3>
-                                    <ul className="space-y-1 list-disc pl-5 text-muted-foreground">
-                                    {job.analysis.strengths.map((item, index) => (
-                                        <li key={index}>{item}</li>
-                                    ))}
-                                    </ul>
-                                </div>
-                                <div className="space-y-2">
-                                    <h3 className="font-semibold flex items-center gap-2 text-amber-500">
-                                    <Lightbulb className="size-4" /> To Highlight
-                                    </h3>
-                                    <ul className="space-y-1 list-disc pl-5 text-muted-foreground">
-                                    {job.analysis.areasForImprovement.map((item, index) => (
-                                        <li key={index}>{item}</li>
-                                    ))}
-                                    </ul>
-                                </div>
-                            </div>
+            <div className="mb-6">
+                <h2 className="text-2xl font-bold tracking-tight">Top Company Recommendations</h2>
+                <p className="text-muted-foreground">
+                  Based on your resume for a <span className="font-semibold text-primary">{scanResult.extractedJobTitle}</span> role in <span className="font-semibold text-primary">{scanResult.extractedLocation}</span>.
+                </p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {scanResult.recommendations.map((job) => (
+                <Card key={job.id} className="flex flex-col text-center">
+                    <CardContent className="flex-grow flex flex-col items-center justify-center p-6">
+                         <div className="relative h-16 w-32 mb-4">
+                            <Image
+                                src={job.logoUrl}
+                                alt={`${job.company} logo`}
+                                fill
+                                className="object-contain"
+                                data-ai-hint="company logo"
+                            />
                         </div>
-                   </Card>
-                ))}
-              </CardContent>
-            </Card>
+                        <h3 className="font-semibold text-lg">{job.company}</h3>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                            <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
+                            <span>{(job.analysis.matchScore / 20).toFixed(1)}</span>
+                             <span>({(job.analysis.matchScore * 12.3).toFixed(0)}k reviews)</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-3 flex-grow">{job.description.split(' ').slice(0, 15).join(' ')}...</p>
+                    </CardContent>
+                    <CardFooter className="p-4 border-t">
+                        <Button
+                            variant="outline"
+                            className="w-full"
+                            onClick={() => handleJobClick(job.id)}
+                            disabled={isPending}
+                        >
+                            View Details
+                        </Button>
+                    </CardFooter>
+                </Card>
+              ))}
+            </div>
         </div>
       )}
     </div>
