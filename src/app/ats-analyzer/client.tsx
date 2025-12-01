@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -345,7 +346,7 @@ export function AtsAnalyzerClient() {
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-4">
-                    <div className="rounded-lg border bg-card p-4">
+                     <div className="rounded-lg border bg-card p-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                            {item.detailedFeedback.map((fb, i) => (
                             <div key={i} className="flex items-center gap-2 text-sm">
@@ -354,7 +355,7 @@ export function AtsAnalyzerClient() {
                                 ) : (
                                     <AlertTriangle className="size-4 shrink-0 text-amber-500" />
                                 )}
-                                <span className="text-muted-foreground">{fb.title}</span>
+                                <span className="font-medium">{fb.title}</span>
                             </div>
                            ))}
                         </div>
