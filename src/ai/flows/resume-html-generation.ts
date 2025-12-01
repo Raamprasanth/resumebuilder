@@ -25,7 +25,7 @@ const prompt = ai.definePrompt({
   prompt: `
 You are an expert in HTML resume design. Your task is to generate the complete HTML source code for a professional resume by populating a given template with the user's information.
 
-**Crucially, the output must be ONLY the raw HTML code, enclosed in a single root <div> element with an id of "resume-container". Do not wrap it in markdown fences, explanations, or any other text. Use inline CSS for all styling.**
+**Crucially, you must return a JSON object with a single key "htmlContent" containing the raw HTML code as a string. Do not add any other explanations or text. The HTML must be a single root <div> element with an id of "resume-container". Use inline CSS for all styling.**
 
 The user has selected the '{{{template}}}' template.
 
@@ -54,8 +54,6 @@ The user has selected the '{{{template}}}' template.
 **Follow the structure for the selected '{{{template}}}' template VERY CAREFULLY.**
 
 **IF template is 'classic' USE THIS STRUCTURE:**
-A single-column layout with clear sections. Use a professional and clean design with serif fonts.
-
 \'\'\'html
 <div id="resume-container" style="font-family: Georgia, serif; line-height: 1.6; color: #333; background-color: #fff; width: 210mm; min-height: 297mm; padding: 25mm;">
     <div style="text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
@@ -108,8 +106,6 @@ A single-column layout with clear sections. Use a professional and clean design 
 
 
 **IF template is 'modern' USE THIS STRUCTURE:**
-A two-column layout with a colored sidebar. Use sans-serif fonts and a clean, contemporary design.
-
 \'\'\'html
 <div id="resume-container" style="display: flex; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f8f9fa; width: 210mm; min-height: 297mm;">
     <div style="width: 35%; background-color: #4A5568; color: #fff; padding: 30px;">
@@ -166,8 +162,6 @@ A two-column layout with a colored sidebar. Use sans-serif fonts and a clean, co
 
 
 **IF template is 'elegant' USE THIS STRUCTURE:**
-A minimalist, stylish design that uses whitespace effectively.
-
 \'\'\'html
 <div id="resume-container" style="font-family: 'Garamond', 'Baskerville', 'Times New Roman', serif; line-height: 1.5; color: #1a1a1a; background-color: #fff; width: 210mm; min-height: 297mm; padding: 25mm 30mm;">
     <h1 style="font-size: 48px; font-weight: normal; text-align: center; letter-spacing: 2px; margin: 0 0 5px 0;">{{{fullName}}}</h1>
