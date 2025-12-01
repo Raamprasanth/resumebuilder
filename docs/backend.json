@@ -346,8 +346,7 @@
   },
   "auth": {
     "providers": [
-      "password",
-      "anonymous"
+      "password"
     ]
   },
   "firestore": {
@@ -516,3 +515,4 @@
     "reasoning": "The Firestore data structure is designed to ensure security, scalability, and ease of debugging, adhering to the core design principles of Authorization Independence, Clarity of Intent, DBAC (Database-Based Access Control), and QAPs (Rules are not Filters). Authorization Independence is achieved through denormalization. For instance, any data requiring user-specific access is nested under `/users/{userId}`, ensuring that access control can be enforced without needing to read data from other documents. Collaborative data, if any, will leverage membership maps, denormalizing user roles within the document itself. Structural Segregation is maintained by ensuring that each collection houses documents with similar security requirements. This avoids complex rule logic and allows for straightforward, secure `list` operations (QAPs). Access Modeling uses path-based ownership (`/users/{userId}/{entity}`) for private user data and existence checks for global roles. Data Clarity and Predictability are achieved through explicit state modeling using a `status` field, predictable schemas, and consistent naming conventions."
   }
 }
+    

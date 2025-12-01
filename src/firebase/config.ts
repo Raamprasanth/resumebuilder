@@ -1,8 +1,10 @@
 export const firebaseConfig = {
-  "projectId": "studio-1329646957-b0b27",
-  "appId": "1:915267438692:web:0c6a51b10072f21271b771",
-  "apiKey": "AIzaSyCb6o-XHiaWC6vsgyGBKKmFd8ghf6CnQco",
-  "authDomain": "studio-1329646957-b0b27.firebaseapp.com",
-  "measurementId": "",
-  "messagingSenderId": "915267438692"
+  apiKey: "AIzaSyBlVgAnT8xackiJtE7fLopKBQOkehnFbf8",
+  authDomain: "vexman-9b85e.firebaseapp.com",
+  projectId: "vexman-9b85e",
+  storageBucket: "vexman-9b85e.firebasestorage.app",
+  messagingSenderId: "887523461668",
+  appId: "1:887523461668:web:3c499653882b14337fa6b1",
+  measurementId: "G-C81F1522RT"
 };
+    

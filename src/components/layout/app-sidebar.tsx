@@ -34,9 +34,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '../ui/button';
+import { useFirebase } from '@/firebase';
+import { signOut } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
 
 const menuItems = [
-  { href: '/', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/ats-analyzer', label: 'ATS Analyzer', icon: FileText },
   { href: '/resume-builder', label: 'Resume Builder', icon: Briefcase },
   { href: '/career-roadmap', label: 'Career Roadmap', icon: Map },
@@ -45,8 +48,18 @@ const menuItems = [
 export function AppSidebar() {
   const pathname = usePathname();
   const { setTheme } = useTheme();
+  const { auth, user } = useFirebase();
+  const router = useRouter();
   const isActive = (href: string) => pathname === href || (href !== '/' && pathname.startsWith(href));
   const userAvatar = PlaceHolderImages.find((p) => p.id === 'user-avatar');
+
+  const handleSignOut = async () => {
+    if (auth) {
+      await signOut(auth);
+      router.push('/');
+    }
+  };
+
 
   return (
     <>
@@ -55,18 +68,6 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
-            <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={isActive('/friends')}
-                  tooltip={{ children: 'Friends', side: 'right' }}
-                >
-                  <Link href="#">
-                    <User />
-                    <span>Friends</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
           {menuItems.map((item) => (
             <SidebarMenuItem key={item.href}>
               <SidebarMenuButton
@@ -85,21 +86,22 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarSeparator />
       <SidebarFooter>
+        {user ? (
         <div className="flex items-center justify-between p-2">
             <div className='flex items-center gap-3'>
                 <Avatar className='size-9'>
                 <AvatarImage
-                    src={userAvatar?.imageUrl}
-                    alt="User"
+                    src={user.photoURL || userAvatar?.imageUrl}
+                    alt={user.displayName || "User"}
                     data-ai-hint={userAvatar?.imageHint}
                 />
-                <AvatarFallback>U</AvatarFallback>
+                <AvatarFallback>{user.email?.[0].toUpperCase()}</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col">
-                <span className="font-semibold text-sm text-foreground">User</span>
-                <span className="text-xs text-muted-foreground">
-                    Online
-                </span>
+                <span className="font-semibold text-sm text-foreground">{user.displayName || user.email}</span>
+                <Button variant="link" size="sm" className="h-auto p-0 text-xs text-muted-foreground" onClick={handleSignOut}>
+                    Log Out
+                </Button>
                 </div>
             </div>
              <DropdownMenu>
@@ -126,7 +128,10 @@ export function AppSidebar() {
                 </DropdownMenuContent>
             </DropdownMenu>
         </div>
+        ) : null}
       </SidebarFooter>
     </>
   );
 }
+
+    
