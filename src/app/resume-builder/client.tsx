@@ -55,78 +55,6 @@ const formSchema = GenerateResumeInputSchema.extend({
 
 type FormSchema = z.infer<typeof formSchema>;
 
-const templateOptions = [
-  {
-    id: 'elegant',
-    label: 'Elegant',
-    imageUrl: 'https://picsum.photos/seed/elegant-resume/400/566',
-    imageHint: 'elegant resume professional',
-  },
-  {
-    id: 'professional',
-    label: 'Professional',
-    imageUrl: 'https://picsum.photos/seed/professional-resume/400/566',
-    imageHint: 'professional resume modern',
-  },
-  {
-    id: 'modern',
-    label: 'Modern',
-    imageUrl: 'https://picsum.photos/seed/modern-resume/400/566',
-    imageHint: 'modern resume clean',
-  },
-  {
-    id: 'classic',
-    label: 'Classic',
-    imageUrl: 'https://picsum.photos/seed/classic-resume/400/566',
-    imageHint: 'classic traditional resume maroon headers',
-  },
-  {
-    id: 'vibrant',
-    label: 'Vibrant',
-    imageUrl: 'https://picsum.photos/seed/vibrant-resume/400/566',
-    imageHint: 'vibrant two column resume orange headers',
-  },
-  {
-    id: 'dark_sidebar',
-    label: 'Dark Sidebar',
-    imageUrl: 'https://picsum.photos/seed/dark-sidebar-resume/400/566',
-    imageHint: 'modern resume dark sidebar left',
-  },
-  {
-    id: 'soft_split',
-    label: 'Soft Split',
-    imageUrl: 'https://picsum.photos/seed/soft-split-resume/400/566',
-    imageHint: 'soft peach split resume layout',
-  },
-];
-
-function TemplatePreview({ templateId, formValues }: { templateId: any, formValues: any }) {
-  const html = generateHtmlResumeString({ ...formValues, template: templateId });
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(0.25);
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-    const observer = new ResizeObserver((entries) => {
-      const width = entries[0].contentRect.width;
-      setScale(width / 794); // 794px is approx 210mm at 96 DPI
-    });
-    observer.observe(containerRef.current);
-    return () => observer.disconnect();
-  }, []);
-
-  return (
-    <div ref={containerRef} className="w-full aspect-[1/1.414] bg-white overflow-hidden relative">
-       <div 
-         className="absolute top-0 left-0 origin-top-left pointer-events-none" 
-         style={{ width: '794px', height: '1123px', transform: `scale(${scale})` }}
-       >
-          <div dangerouslySetInnerHTML={{ __html: html }} />
-       </div>
-    </div>
-  );
-}
-
 export function ResumeBuilderClient() {
   const [isDownloading, setIsDownloading] = useState(false);
   const [isEnhancing, setIsEnhancing] = useState(false);
@@ -159,7 +87,6 @@ export function ResumeBuilderClient() {
         },
       ],
       skills: '• JavaScript, React, Node.js\n• Python, SQL\n• AWS, Docker',
-      template: 'classic',
       enhancementInstructions: '',
     },
   });
@@ -236,7 +163,7 @@ export function ResumeBuilderClient() {
       }
 
 
-      pdf.save(`resume-${values.template}.pdf`);
+      pdf.save('resume.pdf');
 
       document.body.removeChild(renderContainer);
 
@@ -310,62 +237,6 @@ export function ResumeBuilderClient() {
             onSubmit={form.handleSubmit(onDownloadPDF)}
             className="space-y-8"
           >
-            <FormField
-              control={form.control}
-              name="template"
-              render={({ field }) => (
-                <FormItem className="space-y-3">
-                  <FormLabel className="text-base font-semibold">
-                    Choose a Template
-                  </FormLabel>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      className="grid grid-cols-2 md:grid-cols-3 gap-4"
-                    >
-                      {templateOptions.map((template) => (
-                        <FormItem
-                          key={template.id}
-                          className="flex items-center space-x-3 space-y-0"
-                        >
-                          <FormControl>
-                            <div>
-                              <RadioGroupItem
-                                value={template.id}
-                                id={template.id}
-                                className="sr-only"
-                              />
-                              <Label
-                                htmlFor={template.id}
-                                className="cursor-pointer"
-                              >
-                                <Card
-                                  className={cn(
-                                    'overflow-hidden transition-all',
-                                    field.value === template.id &&
-                                      'ring-2 ring-primary ring-offset-2 ring-offset-background'
-                                  )}
-                                >
-                                  <CardContent className="p-0">
-                                    <TemplatePreview templateId={template.id} formValues={formValues} />
-                                  </CardContent>
-                                </Card>
-                                <span className="block text-center mt-2 text-sm font-medium">
-                                  {template.label}
-                                </span>
-                              </Label>
-                            </div>
-                          </FormControl>
-                        </FormItem>
-                      ))}
-                    </RadioGroup>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             <Tabs defaultValue="personal" className="w-full">
               <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="personal">
