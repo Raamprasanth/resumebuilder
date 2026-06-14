@@ -4,6 +4,7 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { generateHtmlResume } from '@/ai/flows/resume-html-generation';
+import { generateHtmlResumeString } from '@/lib/resume-templates';
 import { enhanceResume } from '@/ai/flows/resume-enhancement';
 import {
   GenerateResumeInputSchema,
@@ -40,7 +41,7 @@ import {
   Wand2,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
@@ -99,6 +100,33 @@ const templateOptions = [
   },
 ];
 
+function TemplatePreview({ templateId, formValues }: { templateId: any, formValues: any }) {
+  const html = generateHtmlResumeString({ ...formValues, template: templateId });
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(0.25);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      const width = entries[0].contentRect.width;
+      setScale(width / 794); // 794px is approx 210mm at 96 DPI
+    });
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={containerRef} className="w-full aspect-[1/1.414] bg-white overflow-hidden relative">
+       <div 
+         className="absolute top-0 left-0 origin-top-left pointer-events-none" 
+         style={{ width: '794px', height: '1123px', transform: `scale(${scale})` }}
+       >
+          <div dangerouslySetInnerHTML={{ __html: html }} />
+       </div>
+    </div>
+  );
+}
+
 export function ResumeBuilderClient() {
   const [isDownloading, setIsDownloading] = useState(false);
   const [isEnhancing, setIsEnhancing] = useState(false);
@@ -107,34 +135,36 @@ export function ResumeBuilderClient() {
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      fullName: 'John Doe',
-      email: 'john.doe@example.com',
+      fullName: 'Tommy',
+      email: 'tommy@example.com',
       phone: '+1 234 567 890',
       summary:
-        'A brief summary of your professional background...',
+        'A driven professional with a proven track record of creating dynamic applications and solving complex problems.',
       experiences: [
         {
-          jobTitle: 'Software Engineer',
-          company: 'Tech Corp',
+          jobTitle: 'Senior Software Engineer',
+          company: 'Stark Industries',
           startDate: '2020-01',
           endDate: 'Present',
           jobDescription:
-            '• Developed and maintained web applications using React and Node.js.\n• Collaborated with cross-functional teams to deliver high-quality software.',
+            '• Developed and maintained scalable web applications.\n• Led a team of 5 engineers to deliver critical systems.',
         },
       ],
       education: [
         {
-          degree: 'Bachelor of Science in Computer Science',
-          university: 'State University',
+          degree: 'Master of Engineering',
+          university: 'MIT',
           startDate: '2016-09',
           endDate: '2020-05',
         },
       ],
       skills: '• JavaScript, React, Node.js\n• Python, SQL\n• AWS, Docker',
-      template: 'elegant',
+      template: 'classic',
       enhancementInstructions: '',
     },
   });
+
+  const formValues = form.watch();
 
   const {
     fields: experienceFields,
@@ -318,14 +348,7 @@ export function ResumeBuilderClient() {
                                   )}
                                 >
                                   <CardContent className="p-0">
-                                    <Image
-                                      src={template.imageUrl}
-                                      alt={template.label}
-                                      width={400}
-                                      height={566}
-                                      className="aspect-[1/1.414]"
-                                      data-ai-hint={template.imageHint}
-                                    />
+                                    <TemplatePreview templateId={template.id} formValues={formValues} />
                                   </CardContent>
                                 </Card>
                                 <span className="block text-center mt-2 text-sm font-medium">
