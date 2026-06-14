@@ -73,6 +73,30 @@ const templateOptions = [
     imageUrl: 'https://picsum.photos/seed/modern-resume/400/566',
     imageHint: 'modern resume clean',
   },
+  {
+    id: 'classic',
+    label: 'Classic',
+    imageUrl: 'https://picsum.photos/seed/classic-resume/400/566',
+    imageHint: 'classic traditional resume maroon headers',
+  },
+  {
+    id: 'vibrant',
+    label: 'Vibrant',
+    imageUrl: 'https://picsum.photos/seed/vibrant-resume/400/566',
+    imageHint: 'vibrant two column resume orange headers',
+  },
+  {
+    id: 'dark_sidebar',
+    label: 'Dark Sidebar',
+    imageUrl: 'https://picsum.photos/seed/dark-sidebar-resume/400/566',
+    imageHint: 'modern resume dark sidebar left',
+  },
+  {
+    id: 'soft_split',
+    label: 'Soft Split',
+    imageUrl: 'https://picsum.photos/seed/soft-split-resume/400/566',
+    imageHint: 'soft peach split resume layout',
+  },
 ];
 
 export function ResumeBuilderClient() {
