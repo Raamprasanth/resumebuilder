@@ -43,6 +43,8 @@ const EnhanceResumeOutputSchema = z.object({
 });
 export type EnhanceResumeOutput = z.infer<typeof EnhanceResumeOutputSchema>;
 
+import { runWithFallback } from '@/ai/fallback-runner';
+
 export async function enhanceResume(
   input: EnhanceResumeInput
 ): Promise<EnhanceResumeOutput> {
@@ -92,7 +94,17 @@ const enhanceResumeFlow = ai.defineFlow(
     outputSchema: EnhanceResumeOutputSchema,
   },
   async (input) => {
-    const { output } = await prompt(input);
-    return output!;
+    try {
+      const { output } = await prompt(input);
+      return output!;
+    } catch (error) {
+      console.warn('Gemini prompt failed, falling back...', error);
+      const rendered = await prompt.render(input);
+      const textPrompt = rendered.messages.flatMap(m => m.content.map(c => c.text)).join('\n');
+      return runWithFallback<EnhanceResumeOutput>(
+        'You are an expert resume writer and career coach. You must return a JSON object.',
+        textPrompt
+      );
+    }
   }
 );

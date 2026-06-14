@@ -14,6 +14,8 @@ import {
   type GenerateResumeOutput,
 } from '@/ai/schemas/resume-generation';
 
+import { runWithFallback } from '@/ai/fallback-runner';
+
 export async function generateHtmlResume(input: GenerateResumeInput): Promise<GenerateResumeOutput> {
   return generateHtmlResumeFlow(input);
 }
@@ -211,7 +213,18 @@ const generateHtmlResumeFlow = ai.defineFlow(
     outputSchema: GenerateResumeOutputSchema,
   },
   async (input) => {
-    const { output } = await prompt(input);
-    return output!;
+    try {
+      const { output } = await prompt(input);
+      return output!;
+    } catch (error) {
+      console.warn('Gemini prompt failed, falling back...', error);
+      const rendered = await prompt.render(input);
+      // Combine all text content from the rendered messages
+      const textPrompt = rendered.messages.flatMap(m => m.content.map(c => c.text)).join('\n');
+      return runWithFallback<GenerateResumeOutput>(
+        'You are an expert in HTML resume design. You must return a JSON object.',
+        textPrompt
+      );
+    }
   }
 );
