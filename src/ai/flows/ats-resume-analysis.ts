@@ -1,15 +1,13 @@
 'use server';
 
 /**
- * @fileOverview A flow for analyzing a resume.
- *
- * - analyzeResume - Analyzes the resume and provides feedback.
- * - AnalyzeResumeInput - The input type for the analyzeResume function.
- * - AnalyzeResumeOutput - The return type for the analyzeResume function.
+ * @fileOverview A flow for analyzing a resume using standard heuristics (No AI).
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { z } from 'zod';
+// @ts-ignore
+import pdfParse from 'pdf-parse';
+import mammoth from 'mammoth';
 
 const AnalyzeResumeInputSchema = z.object({
   resumeDataUri: z
@@ -33,7 +31,6 @@ const ScoreItemSchema = z.object({
   detailedFeedback: z.array(DetailedFeedbackItemSchema).describe('An array of 3-5 specific, detailed feedback points for this category.'),
 });
 
-
 const FeedbackItemSchema = z.object({
   type: z.enum(['positive', 'negative']),
   message: z.string(),
@@ -49,40 +46,159 @@ const AnalyzeResumeOutputSchema = z.object({
 export type AnalyzeResumeOutput = z.infer<typeof AnalyzeResumeOutputSchema>;
 
 export async function analyzeResume(input: AnalyzeResumeInput): Promise<AnalyzeResumeOutput> {
-  return analyzeResumeFlow(input);
-}
-
-const prompt = ai.definePrompt({
-  name: 'atsResumeAnalysisPrompt',
-  input: {schema: AnalyzeResumeInputSchema},
-  output: {schema: AnalyzeResumeOutputSchema},
-  prompt: `You are an expert resume reviewer and career coach specializing in ATS (Applicant Tracking Systems).
-  Analyze the provided resume document and return a detailed scoring and feedback report.
-
-  Your analysis must be structured as a JSON object with the following keys:
-  1.  **overallScore**: A single integer from 0 to 100 representing the overall quality and ATS-friendliness of the resume.
-  2.  **scoreBreakdown**: An array of objects for specific analysis categories. You must include these four categories: 'Tone & Style', 'Content', 'Structure', and 'Skills'. For each category object, provide:
-      - 'category': The name of the category.
-      - 'score': A numerical score from 0 to 100 for that category.
-      - 'badge': A qualitative badge ("Strong", "Good Start", "Needs Improvement") based on the score.
-      - 'detailedFeedback': An array of 3-5 specific, detailed feedback points for this category. For each point, provide a 'type' ('positive' or 'negative'), a short 'title', and a detailed 'description' (1-2 sentences).
-  3.  **headline**: A short, encouraging headline for the overall feedback card (e.g., "Great Job!", "A Solid Foundation").
-  4.  **feedback**: An array of 3-5 general, actionable feedback points for the overall resume. For each point, provide a 'type' ('positive' or 'negative') and a 'message'.
-  5.  **summary**: A brief, concluding sentence to encourage refinement.
-
-  Resume:
-  {{media url=resumeDataUri}}
-`,
-});
-
-const analyzeResumeFlow = ai.defineFlow(
-  {
-    name: 'analyzeResumeFlow',
-    inputSchema: AnalyzeResumeInputSchema,
-    outputSchema: AnalyzeResumeOutputSchema,
-  },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
+  const { resumeDataUri } = input;
+  
+  // 1. Extract base64 and mime type
+  const matches = resumeDataUri.match(/^data:([A-Za-z-+\/.]+);base64,(.+)$/);
+  if (!matches || matches.length !== 3) {
+    throw new Error('Invalid input string');
   }
-);
+  
+  const mimeType = matches[1];
+  const base64Data = matches[2];
+  const buffer = Buffer.from(base64Data, 'base64');
+  
+  let text = '';
+  
+  try {
+    if (mimeType === 'application/pdf') {
+      const data = await pdfParse(buffer);
+      text = data.text;
+    } else if (
+      mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || 
+      mimeType === 'application/msword'
+    ) {
+      const result = await mammoth.extractRawText({ buffer });
+      text = result.value;
+    } else {
+      throw new Error(`Unsupported file type: ${mimeType}`);
+    }
+  } catch (error) {
+    console.error("Error parsing document:", error);
+    throw new Error("Failed to extract text from the document.");
+  }
+  
+  // 2. Text Processing & Heuristics
+  const lowerText = text.toLowerCase();
+  
+  // Heuristic 1: Structure (Looking for key sections)
+  let structureScore = 0;
+  const missingSections: string[] = [];
+  const foundSections: string[] = [];
+  
+  const sections = {
+    'Experience': /(experience|employment|work history)/i,
+    'Education': /(education|academic)/i,
+    'Skills': /(skills|technologies|proficiencies)/i,
+    'Summary': /(summary|profile|objective)/i
+  };
+  
+  for (const [sectionName, regex] of Object.entries(sections)) {
+    if (regex.test(text)) {
+      structureScore += 25;
+      foundSections.push(sectionName);
+    } else {
+      missingSections.push(sectionName);
+    }
+  }
+  
+  // Heuristic 2: Content (Quantifiable metrics, word count)
+  let contentScore = 50;
+  const wordCount = text.split(/\s+/).length;
+  if (wordCount > 300 && wordCount < 1000) contentScore += 25; // Good length
+  else if (wordCount <= 300) contentScore -= 10;
+  
+  const numbersRegex = /\b\d+\b/g;
+  const numbersMatch = text.match(numbersRegex);
+  if (numbersMatch && numbersMatch.length > 5) {
+    contentScore += 25; // Quantifiable metrics found
+  } else {
+    contentScore += 10;
+  }
+  contentScore = Math.min(100, Math.max(0, contentScore));
+  
+  // Heuristic 3: Tone & Style (Absence of personal pronouns)
+  let toneScore = 100;
+  const personalPronouns = /\b(i|me|my|we)\b/gi;
+  const pronounsFound = (text.match(personalPronouns) || []).length;
+  if (pronounsFound > 2) {
+    toneScore -= (pronounsFound * 5); // Deduct points for personal pronouns
+  }
+  toneScore = Math.max(0, toneScore);
+  
+  // Heuristic 4: Skills (Keyword density - simulated by tech keywords)
+  let skillsScore = 40;
+  const techKeywords = ['javascript', 'python', 'java', 'c++', 'react', 'node', 'aws', 'docker', 'sql', 'agile', 'management', 'leadership', 'design', 'sales', 'marketing'];
+  let keywordsFound = 0;
+  techKeywords.forEach(kw => {
+    if (lowerText.includes(kw)) keywordsFound++;
+  });
+  skillsScore += (keywordsFound * 10);
+  skillsScore = Math.min(100, skillsScore);
+  
+  const overallScore = Math.round((structureScore + contentScore + toneScore + skillsScore) / 4);
+  
+  // Generate Feedback dynamically
+  const generateBadge = (score: number) => {
+    if (score >= 80) return "Strong";
+    if (score >= 60) return "Good Start";
+    return "Needs Improvement";
+  };
+  
+  const structureFeedback = [];
+  if (missingSections.length > 0) {
+    structureFeedback.push({ type: 'negative' as const, title: 'Missing Sections', description: `Consider adding the following sections: ${missingSections.join(', ')}.` });
+  } else {
+    structureFeedback.push({ type: 'positive' as const, title: 'Great Structure', description: 'Your resume contains all the standard sections expected by ATS.' });
+  }
+  
+  const contentFeedback = [];
+  if (contentScore >= 80) {
+    contentFeedback.push({ type: 'positive' as const, title: 'Quantifiable Metrics', description: 'You have a good amount of numbers and metrics to back up your achievements.' });
+  } else {
+    contentFeedback.push({ type: 'negative' as const, title: 'Lack of Metrics', description: 'Try to quantify your achievements with numbers (e.g., percentages, team sizes, revenue).' });
+  }
+  if (wordCount < 300) {
+    contentFeedback.push({ type: 'negative' as const, title: 'Too Short', description: 'Your resume seems a bit short. Add more detail to your experience.' });
+  } else {
+    contentFeedback.push({ type: 'positive' as const, title: 'Good Length', description: 'Your resume has an appropriate amount of detail.' });
+  }
+  
+  const toneFeedback = [];
+  if (pronounsFound > 0) {
+    toneFeedback.push({ type: 'negative' as const, title: 'Personal Pronouns', description: 'Avoid using personal pronouns like "I" or "my" in a professional resume.' });
+  } else {
+    toneFeedback.push({ type: 'positive' as const, title: 'Professional Tone', description: 'Your resume uses a strong, objective tone.' });
+  }
+  
+  const skillsFeedback = [];
+  if (keywordsFound > 3) {
+    skillsFeedback.push({ type: 'positive' as const, title: 'Keyword Rich', description: 'We found several strong industry keywords in your resume.' });
+  } else {
+    skillsFeedback.push({ type: 'negative' as const, title: 'Missing Keywords', description: 'Consider adding more specific tools, technologies, or hard skills.' });
+  }
+
+  const generalFeedback = [
+     overallScore > 75 
+        ? { type: 'positive' as const, message: 'Your resume is highly readable by ATS systems.' }
+        : { type: 'negative' as const, message: 'Your resume may struggle to pass some ATS filters.' }
+  ];
+  if (missingSections.length > 0) {
+     generalFeedback.push({ type: 'negative' as const, message: `Add missing standard sections: ${missingSections.join(', ')}.` });
+  } else {
+     generalFeedback.push({ type: 'positive' as const, message: 'Excellent use of standard headers.' });
+  }
+  
+  return {
+    overallScore,
+    scoreBreakdown: [
+      { category: 'Structure', score: structureScore, badge: generateBadge(structureScore), detailedFeedback: structureFeedback },
+      { category: 'Content', score: contentScore, badge: generateBadge(contentScore), detailedFeedback: contentFeedback },
+      { category: 'Tone & Style', score: toneScore, badge: generateBadge(toneScore), detailedFeedback: toneFeedback },
+      { category: 'Skills', score: skillsScore, badge: generateBadge(skillsScore), detailedFeedback: skillsFeedback }
+    ],
+    headline: overallScore >= 80 ? "Great Job!" : overallScore >= 60 ? "A Solid Foundation" : "Needs some work",
+    feedback: generalFeedback,
+    summary: "Keep refining your resume to ensure it hits the right keywords for the jobs you want."
+  };
+}
