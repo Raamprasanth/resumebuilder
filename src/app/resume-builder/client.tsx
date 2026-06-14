@@ -86,6 +86,7 @@ export function ResumeBuilderClient() {
           endDate: '2020-05',
         },
       ],
+      projects: [],
       skills: '• JavaScript, React, Node.js\n• Python, SQL\n• AWS, Docker',
       enhancementInstructions: '',
     },
@@ -109,6 +110,15 @@ export function ResumeBuilderClient() {
   } = useFieldArray({
     control: form.control,
     name: 'education',
+  });
+
+  const {
+    fields: projectFields,
+    append: appendProject,
+    remove: removeProject,
+  } = useFieldArray({
+    control: form.control,
+    name: 'projects',
   });
 
   const onDownloadPDF = async (values: GenerateResumeInput) => {
@@ -238,7 +248,7 @@ export function ResumeBuilderClient() {
             className="space-y-8"
           >
             <Tabs defaultValue="personal" className="w-full">
-              <TabsList className="grid w-full grid-cols-5">
+              <TabsList className="grid w-full grid-cols-6">
                 <TabsTrigger value="personal">
                   <User className="mr-2 h-4 w-4" />
                   Personal
@@ -250,6 +260,10 @@ export function ResumeBuilderClient() {
                 <TabsTrigger value="education">
                   <GraduationCap className="mr-2 h-4 w-4" />
                   Education
+                </TabsTrigger>
+                <TabsTrigger value="projects">
+                  <Code className="mr-2 h-4 w-4" />
+                  Projects
                 </TabsTrigger>
                 <TabsTrigger value="skills">
                   <Code className="mr-2 h-4 w-4" />
@@ -535,6 +549,89 @@ export function ResumeBuilderClient() {
                     }
                   >
                     <PlusCircle className="mr-2 h-4 w-4" /> Add Education
+                  </Button>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="projects" className="mt-6">
+                <div className="space-y-6">
+                  {projectFields.map((field, index) => (
+                    <Card key={field.id} className="p-4 relative">
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                          <FormField
+                            control={form.control}
+                            name={`projects.${index}.name`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Project Name</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    placeholder="Awesome Project"
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name={`projects.${index}.timeline`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Timeline</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Jan 2021 - Present" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        <FormField
+                          control={form.control}
+                          name={`projects.${index}.description`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>
+                                Description
+                              </FormLabel>
+                              <FormControl>
+                                <Textarea
+                                  rows={5}
+                                  placeholder="• Describe what you built..."
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute top-2 right-2 text-muted-foreground hover:text-destructive"
+                        onClick={() => removeProject(index)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </Card>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() =>
+                      appendProject({
+                        name: '',
+                        timeline: '',
+                        description: '',
+                      })
+                    }
+                  >
+                    <PlusCircle className="mr-2 h-4 w-4" /> Add Project
                   </Button>
                 </div>
               </TabsContent>

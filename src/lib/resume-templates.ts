@@ -3,7 +3,7 @@ import {
 } from '@/ai/schemas/resume-generation';
 
 export function generateHtmlResumeString(input: GenerateResumeInput): string {
-  const { fullName, email, phone, summary, experiences, education, skills } = input;
+  const { fullName, email, phone, summary, experiences, education, projects, skills } = input;
 
   const experiencesHtml = experiences.map(exp => `
     <div style="margin-bottom: 20px;">
@@ -26,6 +26,16 @@ export function generateHtmlResumeString(input: GenerateResumeInput): string {
     </div>
   `).join('');
 
+  const projectsHtml = projects && projects.length > 0 ? projects.map(proj => `
+    <div style="margin-bottom: 15px;">
+        <div style="display: flex; justify-content: space-between;">
+            <h3 style="margin: 0; font-size: 15px; font-weight: bold; color: #333;">${proj.name}</h3>
+            <span style="font-size: 14px; color: #666;">${proj.timeline}</span>
+        </div>
+        <p style="font-size: 13px; margin: 5px 0 0 0; color: #555; white-space: pre-line;">${proj.description}</p>
+    </div>
+  `).join('') : '';
+
   return `
 <div id="resume-container" style="font-family: 'Arial', sans-serif; line-height: 1.5; color: #333; background-color: #fff; width: 210mm; min-height: 297mm; padding: 25mm 20mm; box-sizing: border-box;">
     <h1 style="font-size: 32px; font-weight: bold; text-align: center; margin: 0 0 10px 0; color: #111;">${fullName}</h1>
@@ -39,6 +49,11 @@ export function generateHtmlResumeString(input: GenerateResumeInput): string {
 
     <h2 style="font-size: 14px; font-weight: bold; text-transform: uppercase; margin-bottom: 15px; margin-top: 25px; color: #222; border-bottom: 1px solid #ccc; padding-bottom: 5px;">Education</h2>
     ${educationHtml}
+
+    ${projectsHtml ? `
+    <h2 style="font-size: 14px; font-weight: bold; text-transform: uppercase; margin-bottom: 15px; margin-top: 25px; color: #222; border-bottom: 1px solid #ccc; padding-bottom: 5px;">Projects</h2>
+    ${projectsHtml}
+    ` : ''}
 
     <h2 style="font-size: 14px; font-weight: bold; text-transform: uppercase; margin-bottom: 15px; margin-top: 25px; color: #222; border-bottom: 1px solid #ccc; padding-bottom: 5px;">Skills</h2>
     <p style="font-size: 13px; color: #444; white-space: pre-line;">${skills}</p>

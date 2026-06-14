@@ -15,6 +15,12 @@ export const EducationSchema = z.object({
   endDate: z.string(),
 });
 
+export const ProjectSchema = z.object({
+  name: z.string(),
+  timeline: z.string(),
+  description: z.string(),
+});
+
 export const GenerateResumeInputSchema = z.object({
   fullName: z.string(),
   email: z.string().email(),
@@ -22,6 +28,7 @@ export const GenerateResumeInputSchema = z.object({
   summary: z.string(),
   experiences: z.array(ExperienceSchema),
   education: z.array(EducationSchema),
+  projects: z.array(ProjectSchema).optional(),
   skills: z.string(),
 });
 export type GenerateResumeInput = z.infer<typeof GenerateResumeInputSchema>;
