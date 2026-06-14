@@ -50,10 +50,11 @@ const prompt = ai.definePrompt({
   {{#if experienceLevel}}Experience Level: {{{experienceLevel}}}{{/if}}
   {{#if workArrangement}}Work Arrangement: {{{workArrangement}}}{{/if}}
 
-  Generate a list of recommendations. For each one, provide:
+  Generate a list of recommendations from platforms like Indeed, Naukri, Apna, Internshala, and JobHai. For each one, provide:
   - A unique id
   - The job title
   - A fictional company name
+  - The platform it was found on (e.g., Indeed, Naukri, Apna)
   - The location
   - A placeholder logo URL from picsum.photos (make sure each logo URL has a unique seed).
   - A detailed job description (at least 3 paragraphs, using markdown for formatting).

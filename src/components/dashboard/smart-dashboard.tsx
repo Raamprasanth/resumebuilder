@@ -548,12 +548,17 @@ export function SmartDashboard() {
                     />
                   </div>
                   <h3 className="text-lg font-semibold">{job.company}</h3>
-                  {'analysis' in job && job.analysis && (
+                  {'platform' in job && job.platform && (
+                    <span className="inline-block mt-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium">
+                      {job.platform as string}
+                    </span>
+                  )}
+                  {'analysis' in job && (job as any).analysis?.matchScore && (
                     <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
                       <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
-                      <span>{(job.analysis.matchScore / 20).toFixed(1)}</span>
+                      <span>{((job as any).analysis.matchScore / 20).toFixed(1)}</span>
                       <span>
-                        ({(job.analysis.matchScore * 12.3).toFixed(0)}k reviews)
+                        {((job as any).analysis.matchScore * 12.3).toFixed(0)}k reviews
                       </span>
                     </div>
                   )}

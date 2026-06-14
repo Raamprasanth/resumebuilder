@@ -83,8 +83,9 @@ const prompt = ai.definePrompt({
     - For the job title, use the most recent or most senior role (e.g., "Senior Product Manager").
     - For location, look for a city or a mention of "Remote". Default to "Remote" if no location is specified.
 
-3.  **Generate Job Recommendations:** Create a list of 4-5 highly relevant, fictional job postings based on the extracted career goals. For each job posting:
+3.  **Generate Job Recommendations:** Create a list of 4-5 highly relevant, fictional job postings based on the extracted career goals, but say they were found on real platforms like Indeed, Naukri, Apna, Internshala, or JobHai. For each job posting:
     - Invent a plausible company name.
+    - Mention the platform it was found on (e.g., Indeed, Naukri, Apna).
     - Use the extracted location.
     - Create a unique placeholder logo URL from picsum.photos (e.g., \`https://picsum.photos/seed/company1/100/100\`).
     - Write a detailed, realistic job description formatted with markdown.

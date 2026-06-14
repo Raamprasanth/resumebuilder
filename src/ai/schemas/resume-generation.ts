@@ -42,6 +42,7 @@ export const JobRecommendationSchema = z.object({
     id: z.string().describe('A unique identifier for the job.'),
     title: z.string().describe('The job title.'),
     company: z.string().describe('The name of the company.'),
+    platform: z.string().optional().describe('The job board platform (e.g., Indeed, Naukri, Apna, Internshala, JobHai).'),
     location: z.string().describe('The location of the job.'),
     logoUrl: z.string().url().describe('A URL for a fictional but realistic company logo. Use picsum.photos for placeholder images (e.g., https://picsum.photos/seed/cologo1/100/100).'),
     description: z.string().describe('A detailed, realistic job description, formatted with markdown (using headings, lists, etc.).'),

@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import type { JobRecommendation } from '@/ai/flows/job-recommendation';
+import { useParams, useRouter } from 'next/navigation';
+import type { JobRecommendation } from '@/ai/schemas/resume-generation';
 import {
   Card,
   CardContent,
@@ -38,6 +38,7 @@ const Markdown = ({ content }: { content: string }) => {
 
 export default function JobDetailsPage() {
   const { id } = useParams();
+  const router = useRouter();
   const [job, setJob] = useState<JobRecommendation | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -66,10 +67,8 @@ export default function JobDetailsPage() {
         <p className="text-muted-foreground mb-4">
           We couldn't find the job you were looking for.
         </p>
-        <Button asChild>
-          <Link href="/">
-            <ArrowLeft className="mr-2" /> Back to Dashboard
-          </Link>
+        <Button onClick={() => router.back()}>
+          <ArrowLeft className="mr-2" /> Back to Dashboard
         </Button>
       </div>
     );
@@ -77,10 +76,8 @@ export default function JobDetailsPage() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <Button variant="ghost" asChild className="mb-4">
-         <Link href="/">
-            <ArrowLeft className="mr-2" /> Back to Recommendations
-          </Link>
+      <Button variant="ghost" onClick={() => router.back()} className="mb-4">
+        <ArrowLeft className="mr-2" /> Back to Recommendations
       </Button>
       <Card>
         <CardHeader className="flex flex-row items-start gap-4">
@@ -99,6 +96,7 @@ export default function JobDetailsPage() {
               <div className="flex items-center gap-4 mt-1 text-muted-foreground">
                 <span className="flex items-center gap-1.5"><Briefcase className="size-4" /> {job.company}</span>
                 <span className="flex items-center gap-1.5"><MapPin className="size-4" /> {job.location}</span>
+                {job.platform && <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium">{job.platform}</span>}
               </div>
             </CardDescription>
           </div>
