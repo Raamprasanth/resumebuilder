@@ -35,6 +35,7 @@ import {
   Rocket,
   Milestone,
   CalendarDays,
+  Download,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
@@ -78,6 +79,43 @@ export function CareerRoadmapClient() {
       setIsLoading(false);
     }
   }
+
+  const handleDownload = async () => {
+    try {
+      // Dynamically import html2pdf.js so it doesn't break SSR
+      const html2pdf = (await import('html2pdf.js')).default;
+      const element = document.getElementById('roadmap-content');
+      if (!element) return;
+      
+      const opt = {
+        margin:       10,
+        filename:     `${roadmap?.title ? roadmap.title.replace(/\s+/g, '-') : 'career-roadmap'}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        enableLinks:  true,
+      };
+      
+      // Temporarily add some padding and background for the PDF
+      const originalPadding = element.style.padding;
+      const originalBg = element.style.backgroundColor;
+      element.style.padding = '20px';
+      element.style.backgroundColor = 'white'; // Assumes light mode styling for PDF
+      
+      await html2pdf().set(opt).from(element).save();
+      
+      // Restore original styles
+      element.style.padding = originalPadding;
+      element.style.backgroundColor = originalBg;
+    } catch (err) {
+      console.error('Failed to generate PDF', err);
+      toast({
+        title: 'Download Failed',
+        description: 'There was an error generating your PDF.',
+        variant: 'destructive',
+      });
+    }
+  };
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -163,11 +201,19 @@ export function CareerRoadmapClient() {
 
       <div className="lg:col-span-2">
         <Card className="min-h-[500px]">
-          <CardHeader>
-            <CardTitle>Your Personalized Roadmap</CardTitle>
-            <CardDescription>
-              {roadmap?.title ? `${roadmap.title} - ${roadmap.timeline}` : 'Follow these stages to achieve your career goals.'}
-            </CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <div>
+              <CardTitle>Your Personalized Roadmap</CardTitle>
+              <CardDescription>
+                {roadmap?.title ? `${roadmap.title} - ${roadmap.timeline}` : 'Follow these stages to achieve your career goals.'}
+              </CardDescription>
+            </div>
+            {roadmap && (
+              <Button onClick={handleDownload} variant="outline" size="sm" className="gap-2">
+                <Download className="size-4" />
+                Download PDF
+              </Button>
+            )}
           </CardHeader>
           <CardContent>
             {isLoading && (
@@ -179,7 +225,12 @@ export function CareerRoadmapClient() {
               </div>
             )}
             {roadmap && roadmap.stages.length > 0 && (
-              <div className="space-y-8">
+              <div id="roadmap-content" className="space-y-8 text-foreground">
+                {/* Title for the PDF, only visible when downloading (or if we want it visible here too, we can let it be) */}
+                <div className="hidden" style={{ display: 'none' }}>
+                  <h2 className="text-2xl font-bold mb-2">{roadmap.title}</h2>
+                  <p className="text-muted-foreground mb-6">Timeline: {roadmap.timeline}</p>
+                </div>
                 {roadmap.stages.map((stage, index) => (
                   <div key={index} className="relative pl-8">
                     <div className="absolute left-0 top-1 flex size-6 items-center justify-center rounded-full bg-primary text-primary-foreground">
