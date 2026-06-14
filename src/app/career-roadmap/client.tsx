@@ -34,6 +34,7 @@ import {
   BookOpen,
   Rocket,
   Milestone,
+  CalendarDays,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
@@ -194,6 +195,29 @@ export function CareerRoadmapClient() {
                     <p className="text-sm text-muted-foreground mt-1 mb-4">{stage.description}</p>
 
                     <div className="space-y-4">
+                      {stage.weeklyBreakdown && stage.weeklyBreakdown.length > 0 && (
+                        <>
+                          <div>
+                            <h4 className="font-semibold mb-2 flex items-center gap-2">
+                              <CalendarDays className="size-4" />
+                              Weekly Breakdown
+                            </h4>
+                            <div className="space-y-3 pl-2 border-l-2 border-primary/20 ml-1">
+                              {stage.weeklyBreakdown.map((wb, wbi) => (
+                                <div key={wbi} className="pl-4">
+                                  <span className="font-medium text-sm text-primary">{wb.week}</span>
+                                  <ul className="list-disc list-outside ml-4 mt-1 space-y-1">
+                                    {wb.subtopics.map((subtopic, sti) => (
+                                      <li key={sti} className="text-sm text-muted-foreground">{subtopic}</li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                          <Separator />
+                        </>
+                      )}
                       <div>
                         <h4 className="font-semibold mb-2 flex items-center gap-2">
                           <BookOpen className="size-4" />

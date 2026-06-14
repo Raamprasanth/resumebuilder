@@ -10,6 +10,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { runWithFallback } from '@/ai/fallback-runner';
 
 const CareerRoadmapInputSchema = z.object({
   careerPath: z.string().describe('The desired career path (e.g., Data Scientist, Software Engineer).'),
@@ -18,10 +19,16 @@ const CareerRoadmapInputSchema = z.object({
 });
 export type CareerRoadmapInput = z.infer<typeof CareerRoadmapInputSchema>;
 
+const WeeklyBreakdownSchema = z.object({
+  week: z.string().describe('The week identifier (e.g., "Week 1", "Week 2").'),
+  subtopics: z.array(z.string()).describe('A list of subtopics or tasks to cover this week.'),
+});
+
 const StageSchema = z.object({
   title: z.string().describe('A concise title for this stage of the roadmap (e.g., "Foundational Python").'),
   duration: z.string().describe('The estimated time to complete this stage (e.g., "Month 1", "Weeks 1-2").'),
   description: z.string().describe('A brief (1-2 sentences) description of what this stage covers.'),
+  weeklyBreakdown: z.array(WeeklyBreakdownSchema).describe('A weekly breakdown of subtopics for this stage.'),
   resources: z.array(
       z.object({
         name: z.string().describe('The display name of the learning resource.'),
@@ -55,8 +62,9 @@ const prompt = ai.definePrompt({
   The roadmap should be broken down into logical stages. For each stage, you must provide:
   1. A clear title and estimated duration.
   2. A brief description of the stage's goals.
-  3. A list of 2-3 high-quality, real online learning resources (with valid URLs).
-  4. A concrete and practical project idea with a name and description.
+  3. A weekly breakdown containing subtopics to read or learn for each week of the stage.
+  4. A list of 2-3 high-quality, real online learning resources (with valid URLs).
+  5. A concrete and practical project idea with a name and description.
 
   Desired Career Path: {{{careerPath}}}
   Current Skills: {{{currentSkills}}}
@@ -71,7 +79,17 @@ const careerRoadmapFlow = ai.defineFlow(
     outputSchema: CareerRoadmapOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    try {
+      const {output} = await prompt(input);
+      return output!;
+    } catch (error) {
+      console.warn('Gemini prompt failed, falling back...', error);
+      const rendered = await prompt.render(input);
+      const textPrompt = rendered.messages.flatMap(m => m.content.map(c => c.text)).join('\n');
+      return runWithFallback<CareerRoadmapOutput>(
+        'You are a career coach that provides actionable and helpful career roadmaps. You must return a JSON object.',
+        textPrompt
+      );
+    }
   }
 );

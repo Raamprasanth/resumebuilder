@@ -1,19 +1,14 @@
 import 'dotenv/config';
-import { generateHtmlResume } from './src/ai/flows/resume-html-generation.js';
+import { generateCareerRoadmap } from './src/ai/flows/career-roadmap-generation.js';
 
 async function test() {
   try {
-    const response = await generateHtmlResume({
-      fullName: 'John Doe',
-      email: 'john@example.com',
-      phone: '1234567890',
-      summary: 'A test summary',
-      experiences: [],
-      education: [],
-      skills: 'JavaScript',
-      template: 'elegant'
+    const response = await generateCareerRoadmap({
+      careerPath: 'Frontend Developer',
+      currentSkills: 'HTML, CSS',
+      timeline: '6 months',
     });
-    console.log('SUCCESS:', response.htmlContent ? 'HTML Generated' : response);
+    console.log('SUCCESS:', JSON.stringify(response, null, 2));
   } catch (err) {
     console.error('ERROR:', err);
   }
