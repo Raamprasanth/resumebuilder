@@ -56,6 +56,29 @@ const formSchema = GenerateResumeInputSchema.extend({
 
 type FormSchema = z.infer<typeof formSchema>;
 
+const AVAILABLE_TEMPLATES = [
+  { id: 'template-1', src: '/templates/template-1.jpg', name: 'Template 1' },
+  { id: 'template-2', src: '/templates/template-2.png', name: 'Template 2' },
+  { id: 'template-3', src: '/templates/template-3.jpg', name: 'Template 3' },
+  { id: 'template-4', src: '/templates/template-4.png', name: 'Template 4' },
+  { id: 'template-5', src: '/templates/template-5.jpg', name: 'Template 5' },
+  { id: 'template-6', src: '/templates/template-6.svg', name: 'Template 6' },
+  { id: 'template-7', src: '/templates/template-7.png', name: 'Template 7' },
+  { id: 'template-8', src: '/templates/template-8.png', name: 'Template 8' },
+  { id: 'template-9', src: '/templates/template-9.png', name: 'Template 9' },
+  { id: 'template-10', src: '/templates/template-10.jpg', name: 'Template 10' },
+  { id: 'template-11', src: '/templates/template-11.webp', name: 'Template 11' },
+  { id: 'template-12', src: '/templates/template-12.jpg', name: 'Template 12' },
+  { id: 'template-13', src: '/templates/template-13.png', name: 'Template 13' },
+  { id: 'template-14', src: '/templates/template-14.webp', name: 'Template 14' },
+  { id: 'template-15', src: '/templates/template-15.jpg', name: 'Template 15' },
+  { id: 'template-16', src: '/templates/template-16.png', name: 'Template 16' },
+  { id: 'template-17', src: '/templates/template-17.png', name: 'Template 17' },
+  { id: 'template-18', src: '/templates/template-18.png', name: 'Template 18' },
+  { id: 'template-19', src: '/templates/template-19.jpg', name: 'Template 19' },
+  { id: 'template-20', src: '/templates/template-20.png', name: 'Template 20' },
+];
+
 export function ResumeBuilderClient() {
   const [isDownloading, setIsDownloading] = useState(false);
   const [isEnhancing, setIsEnhancing] = useState(false);
@@ -90,7 +113,7 @@ export function ResumeBuilderClient() {
       projects: [],
       skills: '• JavaScript, React, Node.js\n• Python, SQL\n• AWS, Docker',
       enhancementInstructions: '',
-      templateId: 'default',
+      templateId: 'template-1',
     },
   });
 
@@ -708,32 +731,31 @@ export function ResumeBuilderClient() {
                           <RadioGroup
                             onValueChange={field.onChange}
                             defaultValue={field.value}
-                            className="flex flex-col space-y-4"
+                            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
                           >
-                            <FormItem className="flex items-center space-x-3 space-y-0">
-                              <FormControl>
-                                <RadioGroupItem value="default" />
-                              </FormControl>
-                              <FormLabel className="font-normal text-base">
-                                Professional (Default) - Clean and minimalist layout.
-                              </FormLabel>
-                            </FormItem>
-                            <FormItem className="flex items-center space-x-3 space-y-0">
-                              <FormControl>
-                                <RadioGroupItem value="modern" />
-                              </FormControl>
-                              <FormLabel className="font-normal text-base">
-                                Modern - Sleek typography with a blue accent header.
-                              </FormLabel>
-                            </FormItem>
-                            <FormItem className="flex items-center space-x-3 space-y-0">
-                              <FormControl>
-                                <RadioGroupItem value="creative" />
-                              </FormControl>
-                              <FormLabel className="font-normal text-base">
-                                Creative - Bolder serif fonts and a pink accent color.
-                              </FormLabel>
-                            </FormItem>
+                            {AVAILABLE_TEMPLATES.map((template) => (
+                              <FormItem key={template.id} className="relative cursor-pointer">
+                                <FormControl>
+                                  <RadioGroupItem value={template.id} className="peer sr-only" />
+                                </FormControl>
+                                <Label
+                                  htmlFor={template.id}
+                                  className="flex flex-col items-center justify-between rounded-xl border-2 border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer transition-all h-full"
+                                  onClick={() => field.onChange(template.id)}
+                                >
+                                  <div className="relative w-full aspect-[1/1.4] mb-3 rounded-lg overflow-hidden bg-muted border shadow-sm">
+                                    <Image
+                                      src={template.src}
+                                      alt={template.name}
+                                      fill
+                                      className="object-cover"
+                                      quality={100}
+                                    />
+                                  </div>
+                                  <span className="font-semibold text-sm mb-1">{template.name}</span>
+                                </Label>
+                              </FormItem>
+                            ))}
                           </RadioGroup>
                         </FormControl>
                         <FormMessage />
