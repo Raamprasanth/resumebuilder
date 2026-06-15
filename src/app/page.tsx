@@ -130,8 +130,25 @@ export default function LandingPage() {
       </main>
 
       <footer className="bg-card/50 border-t mt-20">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center text-muted-foreground text-sm">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col items-center gap-6 text-center text-muted-foreground text-sm">
           <p>&copy; {new Date().getFullYear()} JobGenie. All rights reserved.</p>
+          
+          <div className="flex flex-col items-center gap-3 p-6 border rounded-xl bg-background shadow-sm w-full max-w-sm">
+            <span className="font-semibold text-foreground uppercase tracking-wider text-xs">Developed by</span>
+            <Image 
+              src="/qvs-logo.png" 
+              alt="Quantum Vision Studios Logo" 
+              width={200} 
+              height={80} 
+              className="object-contain" 
+            />
+            <span className="text-sm mt-2">
+              Support:{' '}
+              <a href="mailto:supportqvs@gmail.com" className="hover:underline text-primary font-medium">
+                supportqvs@gmail.com
+              </a>
+            </span>
+          </div>
         </div>
       </footer>
     </div>

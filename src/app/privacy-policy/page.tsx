@@ -92,7 +92,7 @@ export default function PrivacyPolicyPage() {
           <div className="space-y-2">
             <h2 className="text-xl font-semibold">7. Contact Us</h2>
             <p>
-              If you have questions or comments about this Privacy Policy, please contact us at: <a href="mailto:privacy@jobgenie.com" className="text-primary hover:underline">privacy@jobgenie.com</a>
+              If you have questions or comments about this Privacy Policy, please contact us at: <a href="mailto:supportqvs@gmail.com" className="text-primary hover:underline">supportqvs@gmail.com</a>
             </p>
           </div>
         </CardContent>
