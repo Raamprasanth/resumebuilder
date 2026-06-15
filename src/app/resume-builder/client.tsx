@@ -82,6 +82,7 @@ const AVAILABLE_TEMPLATES = [
 export function ResumeBuilderClient() {
   const [isDownloading, setIsDownloading] = useState(false);
   const [isEnhancing, setIsEnhancing] = useState(false);
+  const [activeTab, setActiveTab] = useState('templates');
   const { toast } = useToast();
 
   const form = useForm<FormSchema>({
@@ -272,7 +273,7 @@ export function ResumeBuilderClient() {
             onSubmit={form.handleSubmit(onDownloadPDF)}
             className="space-y-8"
           >
-            <Tabs defaultValue="templates" className="w-full">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="flex w-full flex-wrap h-auto gap-2 justify-start md:grid md:grid-cols-7">
                 <TabsTrigger value="templates" className="flex-1 md:flex-auto">
                   <LayoutTemplate className="mr-2 h-4 w-4" />
@@ -729,7 +730,10 @@ export function ResumeBuilderClient() {
                         <FormLabel>Select Resume Template</FormLabel>
                         <FormControl>
                           <RadioGroup
-                            onValueChange={field.onChange}
+                            onValueChange={(val) => {
+                              field.onChange(val);
+                              setActiveTab('personal');
+                            }}
                             defaultValue={field.value}
                             className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
                           >
@@ -741,7 +745,6 @@ export function ResumeBuilderClient() {
                                 <Label
                                   htmlFor={template.id}
                                   className="flex flex-col items-center justify-between rounded-xl border-2 border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer transition-all h-full"
-                                  onClick={() => field.onChange(template.id)}
                                 >
                                   <div className="relative w-full aspect-[1/1.4] mb-3 rounded-lg overflow-hidden bg-muted border shadow-sm">
                                     <Image
