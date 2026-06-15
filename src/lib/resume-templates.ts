@@ -36,7 +36,7 @@ export function generateHtmlResumeString(input: GenerateResumeInput): string {
     </div>
   `).join('') : '';
 
-  return `
+  const baseHtml = `
 <div id="resume-container" style="font-family: 'Arial', sans-serif; line-height: 1.5; color: #333; background-color: #fff; width: 210mm; min-height: 297mm; padding: 25mm 20mm; box-sizing: border-box;">
     <h1 style="font-size: 32px; font-weight: bold; text-align: center; margin: 0 0 10px 0; color: #111;">${fullName}</h1>
     <p style="text-align: center; font-size: 13px; margin-bottom: 25px; color: #555;">${email} | ${phone}</p>
@@ -59,4 +59,13 @@ export function generateHtmlResumeString(input: GenerateResumeInput): string {
     <p style="font-size: 13px; color: #444; white-space: pre-line;">${skills}</p>
 </div>
   `;
+
+  if (input.templateId === 'modern') {
+    return baseHtml.replace(/font-family: 'Arial', sans-serif;/g, "font-family: 'Helvetica Neue', Helvetica, sans-serif;").replace(/color: #111;/g, "color: #2563eb;");
+  }
+  if (input.templateId === 'creative') {
+    return baseHtml.replace(/font-family: 'Arial', sans-serif;/g, "font-family: 'Georgia', serif;").replace(/color: #111;/g, "color: #db2777;");
+  }
+  
+  return baseHtml;
 }

@@ -39,6 +39,7 @@ import {
   Loader2,
   FileDown,
   Wand2,
+  LayoutTemplate,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import React, { useState, useEffect, useRef } from 'react';
@@ -89,6 +90,7 @@ export function ResumeBuilderClient() {
       projects: [],
       skills: '• JavaScript, React, Node.js\n• Python, SQL\n• AWS, Docker',
       enhancementInstructions: '',
+      templateId: 'default',
     },
   });
 
@@ -248,7 +250,7 @@ export function ResumeBuilderClient() {
             className="space-y-8"
           >
             <Tabs defaultValue="personal" className="w-full">
-              <TabsList className="grid w-full grid-cols-6">
+              <TabsList className="grid w-full grid-cols-7">
                 <TabsTrigger value="personal">
                   <User className="mr-2 h-4 w-4" />
                   Personal
@@ -272,6 +274,10 @@ export function ResumeBuilderClient() {
                  <TabsTrigger value="enhance">
                   <Wand2 className="mr-2 h-4 w-4" />
                   Enhance
+                </TabsTrigger>
+                <TabsTrigger value="templates">
+                  <LayoutTemplate className="mr-2 h-4 w-4" />
+                  Templates
                 </TabsTrigger>
               </TabsList>
 
@@ -687,6 +693,53 @@ export function ResumeBuilderClient() {
                       Enhance with AI
                     </Button>
                   </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="templates" className="mt-6">
+                <div className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="templateId"
+                    render={({ field }) => (
+                      <FormItem className="space-y-3">
+                        <FormLabel>Select Resume Template</FormLabel>
+                        <FormControl>
+                          <RadioGroup
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            className="flex flex-col space-y-4"
+                          >
+                            <FormItem className="flex items-center space-x-3 space-y-0">
+                              <FormControl>
+                                <RadioGroupItem value="default" />
+                              </FormControl>
+                              <FormLabel className="font-normal text-base">
+                                Professional (Default) - Clean and minimalist layout.
+                              </FormLabel>
+                            </FormItem>
+                            <FormItem className="flex items-center space-x-3 space-y-0">
+                              <FormControl>
+                                <RadioGroupItem value="modern" />
+                              </FormControl>
+                              <FormLabel className="font-normal text-base">
+                                Modern - Sleek typography with a blue accent header.
+                              </FormLabel>
+                            </FormItem>
+                            <FormItem className="flex items-center space-x-3 space-y-0">
+                              <FormControl>
+                                <RadioGroupItem value="creative" />
+                              </FormControl>
+                              <FormLabel className="font-normal text-base">
+                                Creative - Bolder serif fonts and a pink accent color.
+                              </FormLabel>
+                            </FormItem>
+                          </RadioGroup>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
               </TabsContent>
             </Tabs>

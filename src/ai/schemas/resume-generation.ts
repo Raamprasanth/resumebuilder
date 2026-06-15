@@ -30,6 +30,7 @@ export const GenerateResumeInputSchema = z.object({
   education: z.array(EducationSchema),
   projects: z.array(ProjectSchema).optional(),
   skills: z.string(),
+  templateId: z.string().optional().describe('The ID of the selected resume template (e.g., default, modern, creative).'),
 });
 export type GenerateResumeInput = z.infer<typeof GenerateResumeInputSchema>;
 
