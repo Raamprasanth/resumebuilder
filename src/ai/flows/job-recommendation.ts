@@ -24,7 +24,7 @@ export type JobRecommendationInput = z.infer<
 >;
 
 const JobRecommendationOutputSchema = z.object({
-  recommendations: z.array(JobRecommendationSchema).describe('A list of up to 50 realistic job recommendations.'),
+  recommendations: z.array(JobRecommendationSchema).describe('A list of up to 12 realistic job recommendations.'),
 });
 export type JobRecommendationOutput = z.infer<
   typeof JobRecommendationOutputSchema
@@ -40,7 +40,7 @@ const prompt = ai.definePrompt({
   name: 'jobRecommendationPrompt',
   input: { schema: JobRecommendationInputSchema },
   output: { schema: JobRecommendationOutputSchema },
-  prompt: `You are a helpful career assistant. Your task is to generate a list of up to 50 realistic-sounding but fictional job recommendations based on a user's desired job title and location, and other filter criteria. Keep descriptions concise so you can generate as many as possible.
+  prompt: `You are a helpful career assistant. Your task is to generate a list of up to 12 realistic-sounding but fictional job recommendations based on a user's desired job title and location, and other filter criteria. Keep descriptions concise so you can generate as many as possible.
 
   For each job, provide a plausible fictional company name. Each job should have a unique ID (e.g., 'job-1', 'job-2').
 

@@ -56,7 +56,7 @@ const SmartScanOutputSchema = z.object({
   recommendations: z
     .array(RecommendedJobWithAnalysisSchema)
     .describe(
-      'A list of up to 50 realistic job recommendations, each including a profile match analysis.'
+      'A list of up to 12 realistic job recommendations, each including a profile match analysis.'
     ),
 });
 
@@ -83,7 +83,7 @@ const prompt = ai.definePrompt({
     - For the job title, use the most recent or most senior role (e.g., "Senior Product Manager").
     - For location, look for a city or a mention of "Remote". Default to "Remote" if no location is specified.
 
-3.  **Generate Job Recommendations:** Create a list of up to 50 highly relevant, fictional job postings based on the extracted career goals. Keep job descriptions concise so you can generate as many as possible. Ensure they are assigned to real platforms like Indeed, Naukri, LinkedIn, Apna, Internshala, or Jobrapido. For each job posting:
+3.  **Generate Job Recommendations:** Create a list of up to 12 highly relevant, fictional job postings based on the extracted career goals. Keep job descriptions concise so you can generate as many as possible. Ensure they are assigned to real platforms like Indeed, Naukri, LinkedIn, Apna, Internshala, or Jobrapido. For each job posting:
     - Invent a plausible company name.
     - Mention the platform it was found on (e.g., Indeed, Naukri, LinkedIn, Apna, Internshala, Jobrapido).
     - Use the extracted location.
