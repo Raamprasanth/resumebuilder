@@ -77,7 +77,7 @@ export function AppSidebar() {
     <>
       <SidebarHeader>
         <div className="flex items-center justify-center gap-2 p-2 w-full">
-            <Logo className="h-12 w-auto dark:brightness-0 dark:invert" />
+            <Logo className="h-12 w-auto" />
         </div>
       </SidebarHeader>
       <SidebarContent>
