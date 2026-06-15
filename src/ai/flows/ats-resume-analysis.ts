@@ -188,6 +188,56 @@ export async function analyzeResume(input: AnalyzeResumeInput): Promise<AnalyzeR
   } else {
      generalFeedback.push({ type: 'positive' as const, message: 'Excellent use of standard headers.' });
   }
+
+  // 1. Action Verbs Check
+  const actionVerbs = ['led', 'managed', 'developed', 'created', 'improved', 'increased', 'designed', 'resolved', 'implemented', 'achieved', 'optimized', 'spearheaded'];
+  let actionVerbsFound = 0;
+  actionVerbs.forEach(verb => {
+    if (lowerText.includes(verb)) actionVerbsFound++;
+  });
+  if (actionVerbsFound < 3) {
+    generalFeedback.push({ type: 'negative' as const, message: 'Start more bullet points with strong action verbs (e.g., Developed, Managed, Increased).' });
+  } else {
+    generalFeedback.push({ type: 'positive' as const, message: 'Good use of strong action verbs to describe your achievements.' });
+  }
+
+  // 2. Contact Info Check
+  const hasEmail = /[\w.-]+@[\w.-]+\.\w+/.test(text);
+  const hasPhone = /(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}/.test(text) || /\b\d{10}\b/.test(text);
+  if (!hasEmail || !hasPhone) {
+    generalFeedback.push({ type: 'negative' as const, message: 'Make sure your contact information (Email, Phone) is clearly visible and in a standard format.' });
+  }
+
+  // 3. Quantification Check
+  if (!numbersMatch || numbersMatch.length < 5) {
+    generalFeedback.push({ type: 'negative' as const, message: 'Quantify your impact more frequently using percentages, dollar amounts, or timeframes.' });
+  }
+
+  // 4. Length Check
+  if (wordCount > 1000) {
+    generalFeedback.push({ type: 'negative' as const, message: 'Your resume might be too long. Consider condensing it to the most relevant experiences.' });
+  }
+
+  // 5. Soft Skills Check
+  const softSkills = ['communication', 'teamwork', 'leadership', 'problem solving', 'collaboration', 'adaptability', 'time management'];
+  let softSkillsFound = 0;
+  softSkills.forEach(skill => {
+    if (lowerText.includes(skill)) softSkillsFound++;
+  });
+  if (softSkillsFound < 2) {
+    generalFeedback.push({ type: 'negative' as const, message: 'Include some soft skills (like leadership, communication) to complement your technical skills.' });
+  }
+
+  // 6. Date Format Check
+  const hasDates = /(january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sep|oct|nov|dec)?\s*\d{4}/i.test(text);
+  if (!hasDates) {
+    generalFeedback.push({ type: 'negative' as const, message: 'Ensure your employment dates are clearly formatted (e.g., Month YYYY) so ATS can calculate your years of experience.' });
+  }
+  
+  // 7. Keyword Density
+  if (keywordsFound < 3) {
+    generalFeedback.push({ type: 'negative' as const, message: 'Tailor your resume with more industry-specific keywords to improve ATS ranking.' });
+  }
   
   return {
     overallScore,
