@@ -62,35 +62,6 @@ export default function LandingPage() {
                 Find the perfect job for you, with a personalized search and
                 AI-powered recommendations to guide your career.
               </p>
-              <div className="mt-10 p-2 bg-card shadow-lg rounded-lg border">
-                <form className="grid sm:grid-cols-3 gap-2">
-                  <div className="relative sm:col-span-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                    <Input
-                      type="text"
-                      placeholder="Job title, Keyword..."
-                      className="pl-10 h-12 bg-card border-none focus-visible:ring-0"
-                    />
-                  </div>
-                  <div className="relative sm:col-span-1 border-l">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                    <Input
-                      type="text"
-                      placeholder="Your Location"
-                      className="pl-10 h-12 bg-card border-none focus-visible:ring-0"
-                    />
-                  </div>
-                  <Button size="lg" className="w-full h-12 sm:col-span-1">
-                    Find Job
-                  </Button>
-                </form>
-              </div>
-              <p className="mt-4 text-sm text-muted-foreground">
-                Suggestion:{' '}
-                <span className="text-foreground/90">
-                  Designer, Programing, Digital Marketing, Video, Animation.
-                </span>
-              </p>
             </div>
             <div className="hidden md:block">
               <Image
