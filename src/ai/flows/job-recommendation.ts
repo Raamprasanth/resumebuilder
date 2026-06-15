@@ -24,7 +24,7 @@ export type JobRecommendationInput = z.infer<
 >;
 
 const JobRecommendationOutputSchema = z.object({
-  recommendations: z.array(JobRecommendationSchema).describe('A list of 4-5 realistic job recommendations.'),
+  recommendations: z.array(JobRecommendationSchema).describe('A list of up to 50 realistic job recommendations.'),
 });
 export type JobRecommendationOutput = z.infer<
   typeof JobRecommendationOutputSchema
@@ -40,7 +40,7 @@ const prompt = ai.definePrompt({
   name: 'jobRecommendationPrompt',
   input: { schema: JobRecommendationInputSchema },
   output: { schema: JobRecommendationOutputSchema },
-  prompt: `You are a helpful career assistant. Your task is to generate a list of 4-5 realistic-sounding but fictional job recommendations based on a user's desired job title and location, and other filter criteria.
+  prompt: `You are a helpful career assistant. Your task is to generate a list of up to 50 realistic-sounding but fictional job recommendations based on a user's desired job title and location, and other filter criteria. Keep descriptions concise so you can generate as many as possible.
 
   For each job, provide a plausible fictional company name. Each job should have a unique ID (e.g., 'job-1', 'job-2').
 
@@ -50,15 +50,15 @@ const prompt = ai.definePrompt({
   {{#if experienceLevel}}Experience Level: {{{experienceLevel}}}{{/if}}
   {{#if workArrangement}}Work Arrangement: {{{workArrangement}}}{{/if}}
 
-  Generate a list of recommendations from platforms like Indeed, Naukri, Apna, Internshala, and JobHai. For each one, provide:
+  Generate a list of recommendations from platforms like Indeed, Naukri, LinkedIn, Apna, Internshala, and Jobrapido. For each one, provide:
   - A unique id
   - The job title
   - A fictional company name
-  - The platform it was found on (e.g., Indeed, Naukri, Apna)
+  - The platform it was found on (e.g., Indeed, Naukri, LinkedIn, Apna, Internshala, Jobrapido)
   - The location
   - A placeholder logo URL from picsum.photos (make sure each logo URL has a unique seed).
-  - A detailed job description (at least 3 paragraphs, using markdown for formatting).
-  - A fictional application URL.
+  - A brief job description (1-2 paragraphs, using markdown for formatting).
+  - A REAL search URL to find similar jobs on that platform (e.g., https://www.indeed.com/jobs?q=... or https://www.linkedin.com/jobs/search/?keywords=...). Do NOT generate broken or fictional domain links.
 `,
 });
 

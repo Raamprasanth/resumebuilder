@@ -56,7 +56,7 @@ const SmartScanOutputSchema = z.object({
   recommendations: z
     .array(RecommendedJobWithAnalysisSchema)
     .describe(
-      'A list of 4-5 realistic job recommendations, each including a profile match analysis.'
+      'A list of up to 50 realistic job recommendations, each including a profile match analysis.'
     ),
 });
 
@@ -83,13 +83,13 @@ const prompt = ai.definePrompt({
     - For the job title, use the most recent or most senior role (e.g., "Senior Product Manager").
     - For location, look for a city or a mention of "Remote". Default to "Remote" if no location is specified.
 
-3.  **Generate Job Recommendations:** Create a list of 4-5 highly relevant, fictional job postings based on the extracted career goals, but say they were found on real platforms like Indeed, Naukri, Apna, Internshala, or JobHai. For each job posting:
+3.  **Generate Job Recommendations:** Create a list of up to 50 highly relevant, fictional job postings based on the extracted career goals. Keep job descriptions concise so you can generate as many as possible. Ensure they are assigned to real platforms like Indeed, Naukri, LinkedIn, Apna, Internshala, or Jobrapido. For each job posting:
     - Invent a plausible company name.
-    - Mention the platform it was found on (e.g., Indeed, Naukri, Apna).
+    - Mention the platform it was found on (e.g., Indeed, Naukri, LinkedIn, Apna, Internshala, Jobrapido).
     - Use the extracted location.
     - Create a unique placeholder logo URL from picsum.photos (e.g., \`https://picsum.photos/seed/company1/100/100\`).
-    - Write a detailed, realistic job description formatted with markdown.
-    - Provide a fictional application URL.
+    - Write a brief job description (1-2 paragraphs) formatted with markdown.
+    - Provide a REAL search URL to find similar jobs on that platform (e.g., https://www.indeed.com/jobs?q=... or https://www.linkedin.com/jobs/search/?keywords=...). Do NOT generate broken or fictional domain links.
 
 4.  **Perform Match Analysis for Each Job:** For each job recommendation you just created, analyze the user's resume against it. Provide a match score, a list of 2-3 strengths, and 2-3 areas for improvement. This analysis should be nested within each recommendation object.
 
