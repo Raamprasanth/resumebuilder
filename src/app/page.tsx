@@ -35,7 +35,7 @@ export default function LandingPage() {
             <Link href="/" className="flex items-center gap-2">
               <Logo className="h-8 w-8 text-primary" />
               <span className="font-bold text-2xl">
-                JobGenie
+                JobWizard
               </span>
             </Link>
             <div className="flex items-center gap-2">
@@ -105,7 +105,7 @@ export default function LandingPage() {
 
       <footer className="bg-card/50 border-t mt-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col items-center gap-6 text-center text-muted-foreground text-sm">
-          <p>&copy; {new Date().getFullYear()} JobGenie. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} JobWizard. All rights reserved.</p>
           
           <div className="flex flex-col items-center gap-3 p-6 border rounded-xl bg-background shadow-sm w-full max-w-sm">
             <span className="font-semibold text-foreground uppercase tracking-wider text-xs">Developed by</span>

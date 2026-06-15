@@ -111,7 +111,7 @@ export default function SignupPage() {
 
       toast({
         title: 'Account Created',
-        description: 'Welcome to JobGenie!',
+        description: 'Welcome to JobWizard!',
       });
       router.push('/dashboard');
     } catch (error) {
@@ -154,7 +154,7 @@ export default function SignupPage() {
         <CardHeader className="text-center">
           <CardTitle>Create an Account</CardTitle>
           <CardDescription>
-            Join JobGenie to supercharge your career search.
+            Join JobWizard to supercharge your career search.
           </CardDescription>
         </CardHeader>
         <CardContent>

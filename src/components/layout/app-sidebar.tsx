@@ -79,7 +79,7 @@ export function AppSidebar() {
         <div className="flex items-center gap-2 p-2">
             <Logo className="h-8 w-8 text-primary" />
             <span className="font-bold text-2xl text-foreground">
-                JobGenie
+                JobWizard
             </span>
         </div>
       </SidebarHeader>

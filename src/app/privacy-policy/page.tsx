@@ -2,8 +2,8 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 export const metadata = {
-    title: 'Privacy & Policy | JobGenie',
-    description: 'Read the Privacy & Policy for JobGenie.',
+    title: 'Privacy & Policy | JobWizard',
+    description: 'Read the Privacy & Policy for JobWizard.',
 };
 
 export default function PrivacyPolicyPage() {
@@ -18,7 +18,7 @@ export default function PrivacyPolicyPage() {
         </CardHeader>
         <CardContent className="prose prose-sm dark:prose-invert max-w-none space-y-6">
           <p>
-            Welcome to JobGenie. We are committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our application.
+            Welcome to JobWizard. We are committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our application.
           </p>
 
           <div className="space-y-2">

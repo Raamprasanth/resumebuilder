@@ -1,8 +1,8 @@
 import { ProfileClient } from './client';
 
 export const metadata = {
-    title: 'Profile | JobGenie',
-    description: 'Manage your profile on JobGenie.',
+    title: 'Profile | JobWizard',
+    description: 'Manage your profile on JobWizard.',
 };
 
 export default function ProfilePage() {

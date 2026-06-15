@@ -99,7 +99,7 @@ export default function LoginPage() {
         <CardHeader className="text-center">
           <CardTitle>Welcome Back!</CardTitle>
           <CardDescription>
-            Sign in to continue to your JobGenie dashboard.
+            Sign in to continue to your JobWizard dashboard.
           </CardDescription>
         </CardHeader>
         <CardContent>
