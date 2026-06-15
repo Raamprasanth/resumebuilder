@@ -33,10 +33,7 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             <Link href="/" className="flex items-center gap-2">
-              <Logo className="h-8 w-8 text-primary" />
-              <span className="font-bold text-2xl">
-                JobGenie
-              </span>
+              <Logo className="h-14 w-auto dark:brightness-0 dark:invert" />
             </Link>
             <div className="flex items-center gap-2">
               <Button variant="ghost" asChild>

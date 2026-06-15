@@ -76,11 +76,8 @@ export function AppSidebar() {
   return (
     <>
       <SidebarHeader>
-        <div className="flex items-center gap-2 p-2">
-            <Logo className="h-8 w-8 text-primary" />
-            <span className="font-bold text-2xl text-foreground">
-                JobGenie
-            </span>
+        <div className="flex items-center justify-center gap-2 p-2 w-full">
+            <Logo className="h-12 w-auto dark:brightness-0 dark:invert" />
         </div>
       </SidebarHeader>
       <SidebarContent>
