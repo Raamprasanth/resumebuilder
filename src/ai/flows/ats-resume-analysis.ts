@@ -6,7 +6,7 @@
 
 import { z } from 'zod';
 // @ts-ignore
-import pdfParse from 'pdf-parse';
+import * as pdfParse from 'pdf-parse';
 import mammoth from 'mammoth';
 
 const AnalyzeResumeInputSchema = z.object({

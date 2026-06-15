@@ -750,7 +750,8 @@ export function ResumeBuilderClient() {
                                       fill
                                       className="object-contain"
                                       quality={100}
-                                      unoptimized={true}
+                                      sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                                      priority={false}
                                     />
                                   </div>
                                   <span className="font-semibold text-sm mb-1">{template.name}</span>
