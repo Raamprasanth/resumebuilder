@@ -42,7 +42,7 @@ import {
   LayoutTemplate,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useMemo } from 'react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
@@ -85,6 +85,15 @@ export function ResumeBuilderClient() {
   const [activeTab, setActiveTab] = useState('templates');
   const { toast } = useToast();
 
+  const fileToDataUri = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+      reader.readAsDataURL(file);
+    });
+  };
+
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -115,10 +124,14 @@ export function ResumeBuilderClient() {
       skills: '• JavaScript, React, Node.js\n• Python, SQL\n• AWS, Docker',
       enhancementInstructions: '',
       templateId: 'template-1',
+      photoDataUri: '',
     },
   });
 
-  const formValues = form.watch();
+  const watchedValues = form.watch();
+  const htmlPreview = useMemo(() => {
+    return generateHtmlResumeString(watchedValues as any);
+  }, [watchedValues]);
 
   const {
     fields: experienceFields,
@@ -259,20 +272,22 @@ export function ResumeBuilderClient() {
 
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>AI Resume Builder</CardTitle>
-        <CardDescription>
-          Fill in your details, choose a template, and generate a professional
-          PDF resume. Use the AI enhancer to tailor your content.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onDownloadPDF)}
-            className="space-y-8"
-          >
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="flex flex-col">
+        <Card>
+          <CardHeader>
+            <CardTitle>AI Resume Builder</CardTitle>
+            <CardDescription>
+              Fill in your details, choose a template, and generate a professional
+              PDF resume. Use the AI enhancer to tailor your content.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onDownloadPDF)}
+                className="space-y-8"
+              >
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="flex w-full flex-wrap h-auto gap-2 justify-start md:grid md:grid-cols-7">
                 <TabsTrigger value="templates" className="flex-1 md:flex-auto">
@@ -356,6 +371,39 @@ export function ResumeBuilderClient() {
                       )}
                     />
                   </div>
+                  <FormField
+                    control={form.control}
+                    name="photoDataUri"
+                    render={({ field: { onChange, value, ...rest } }) => (
+                      <FormItem>
+                        <FormLabel>Profile Photo (Optional)</FormLabel>
+                        <FormControl>
+                          <div className="flex items-center gap-4">
+                              {value && (
+                                  <img src={value} alt="Profile" className="w-16 h-16 rounded-full object-cover border shadow-sm" />
+                              )}
+                              <Input 
+                                  type="file" 
+                                  accept="image/*" 
+                                  className="flex-1 cursor-pointer"
+                                  onChange={async (e) => {
+                                      if (e.target.files && e.target.files[0]) {
+                                          const uri = await fileToDataUri(e.target.files[0]);
+                                          onChange(uri);
+                                      }
+                                  }}
+                                  {...rest}
+                                  value={undefined}
+                              />
+                              {value && (
+                                  <Button type="button" variant="ghost" size="sm" onClick={() => onChange('')}>Remove</Button>
+                              )}
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <FormField
                     control={form.control}
                     name="summary"
@@ -785,5 +833,32 @@ export function ResumeBuilderClient() {
         </Form>
       </CardContent>
     </Card>
+      </div>
+
+      <div className="hidden lg:block sticky top-24 h-[calc(100vh-8rem)]">
+        <Card className="h-full flex flex-col overflow-hidden bg-muted/10 border-2 border-primary/10 shadow-lg">
+          <CardHeader className="py-4 border-b bg-card">
+            <CardTitle className="text-lg flex items-center justify-between">
+              Live Preview
+              <span className="text-xs font-normal text-muted-foreground bg-muted px-2 py-1 rounded-md">Auto-updating</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex-grow p-0 relative bg-neutral-100">
+            {htmlPreview ? (
+              <iframe
+                srcDoc={htmlPreview}
+                className="absolute inset-0 w-full h-full border-0"
+                title="Resume Preview"
+                style={{ backgroundColor: '#f5f5f5' }}
+              />
+            ) : (
+              <div className="flex items-center justify-center h-full text-muted-foreground">
+                <Loader2 className="h-8 w-8 animate-spin" />
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }

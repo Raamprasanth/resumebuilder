@@ -3,7 +3,7 @@ import {
 } from '@/ai/schemas/resume-generation';
 
 export function generateHtmlResumeString(input: GenerateResumeInput): string {
-  const { fullName, email, phone, summary, experiences, education, projects, skills } = input;
+  const { fullName, email, phone, summary, experiences, education, projects, skills, photoDataUri } = input;
 
   const experiencesHtml = experiences.map(exp => `
     <div style="margin-bottom: 20px;">
@@ -38,8 +38,17 @@ export function generateHtmlResumeString(input: GenerateResumeInput): string {
 
   const baseHtml = `
 <div id="resume-container" style="font-family: 'Arial', sans-serif; line-height: 1.5; color: #333; background-color: #fff; width: 210mm; min-height: 297mm; padding: 25mm 20mm; box-sizing: border-box;">
-    <h1 style="font-size: 32px; font-weight: bold; text-align: center; margin: 0 0 10px 0; color: #111;">${fullName}</h1>
-    <p style="text-align: center; font-size: 13px; margin-bottom: 25px; color: #555;">${email} | ${phone}</p>
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px;">
+        <div style="flex: 1;">
+            <h1 style="font-size: 32px; font-weight: bold; margin: 0 0 10px 0; color: #111;">${fullName}</h1>
+            <p style="font-size: 13px; margin: 0; color: #555;">${email} | ${phone}</p>
+        </div>
+        ${photoDataUri ? `
+        <div style="width: 100px; height: 100px; border-radius: 50%; overflow: hidden; border: 2px solid #ddd; flex-shrink: 0; margin-left: 20px;">
+            <img src="${photoDataUri}" alt="Profile Photo" style="width: 100%; height: 100%; object-fit: cover;" />
+        </div>
+        ` : ''}
+    </div>
 
     <h2 style="font-size: 14px; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; color: #222; border-bottom: 1px solid #ccc; padding-bottom: 5px;">Summary</h2>
     <p style="font-size: 13px; margin-bottom: 25px; color: #444;">${summary}</p>

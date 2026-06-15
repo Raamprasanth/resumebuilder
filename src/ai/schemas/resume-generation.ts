@@ -30,6 +30,7 @@ export const GenerateResumeInputSchema = z.object({
   education: z.array(EducationSchema),
   projects: z.array(ProjectSchema).optional(),
   skills: z.string(),
+  photoDataUri: z.string().optional().describe('Base64 data URI of the profile photo.'),
   templateId: z.string().optional().describe('The ID of the selected resume template (e.g., default, modern, creative).'),
 });
 export type GenerateResumeInput = z.infer<typeof GenerateResumeInputSchema>;
@@ -45,8 +46,8 @@ export const JobRecommendationSchema = z.object({
     company: z.string().describe('The name of the company.'),
     platform: z.string().optional().describe('The job board platform (e.g., Indeed, Naukri, Apna, Internshala, JobHai).'),
     location: z.string().describe('The location of the job.'),
-    logoUrl: z.string().url().describe('A URL for a fictional but realistic company logo. Use picsum.photos for placeholder images (e.g., https://picsum.photos/seed/cologo1/100/100).'),
+    logoUrl: z.string().describe('A URL for a fictional but realistic company logo. Use picsum.photos for placeholder images (e.g., https://picsum.photos/seed/cologo1/100/100).'),
     description: z.string().describe('A detailed, realistic job description, formatted with markdown (using headings, lists, etc.).'),
-    applyUrl: z.string().url().describe('A REAL search URL for the job title and location on the specified platform (e.g., https://www.indeed.com/jobs?q=Software+Engineer&l=New+York for Indeed, https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=New%20York for LinkedIn). Do NOT use fictional domains.'),
+    applyUrl: z.string().describe('A REAL search URL for the job title and location on the specified platform (e.g., https://www.indeed.com/jobs?q=Software+Engineer&l=New+York for Indeed, https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=New%20York for LinkedIn). Do NOT use fictional domains.'),
 });
 export type JobRecommendation = z.infer<typeof JobRecommendationSchema>;
