@@ -95,6 +95,23 @@ export default function PrivacyPolicyPage() {
               If you have questions or comments about this Privacy Policy, please contact us at: <a href="mailto:supportqvs@gmail.com" className="text-primary hover:underline">supportqvs@gmail.com</a>
             </p>
           </div>
+
+          <div className="flex flex-col items-center gap-3 p-6 border rounded-xl bg-background shadow-sm w-full max-w-sm mx-auto mt-8">
+            <span className="font-semibold text-foreground uppercase tracking-wider text-xs">Developed by</span>
+            <img 
+              src="/qvs-logo.png" 
+              alt="Quantum Vision Studios Logo" 
+              width={200} 
+              height={80} 
+              className="object-contain" 
+            />
+            <span className="text-sm mt-2">
+              Support:{' '}
+              <a href="mailto:supportqvs@gmail.com" className="hover:underline text-primary font-medium">
+                supportqvs@gmail.com
+              </a>
+            </span>
+          </div>
         </CardContent>
       </Card>
     </div>

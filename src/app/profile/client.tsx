@@ -44,7 +44,6 @@ import {
   Github,
   Code2,
   Wand2,
-  Badge,
   Star,
   Trophy,
 } from 'lucide-react';
@@ -489,7 +488,7 @@ export function ProfileClient() {
                              {analysisResult.stackOverflow && (
                                <Card>
                                  <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                  <CardTitle className="text-lg font-medium flex items-center gap-2"><Badge/> Stack Overflow</CardTitle>
+                                  <CardTitle className="text-lg font-medium flex items-center gap-2"><Trophy className="h-4 w-4"/> Stack Overflow</CardTitle>
                                 </CardHeader>
                                  <CardContent>
                                     <p className="text-xs text-muted-foreground">Reputation</p>
