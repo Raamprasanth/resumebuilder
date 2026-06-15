@@ -5,7 +5,7 @@ export function Logo({ className, ...props }: React.ImgHTMLAttributes<HTMLImageE
     <img
       src="/logo.png"
       alt="Job Genie Logo"
-      className={cn("object-contain", className)}
+      className={cn("object-contain animate-float drop-shadow-md", className)}
       {...props}
     />
   );
