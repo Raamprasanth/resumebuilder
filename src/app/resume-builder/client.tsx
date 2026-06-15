@@ -272,8 +272,12 @@ export function ResumeBuilderClient() {
             onSubmit={form.handleSubmit(onDownloadPDF)}
             className="space-y-8"
           >
-            <Tabs defaultValue="personal" className="w-full">
+            <Tabs defaultValue="templates" className="w-full">
               <TabsList className="grid w-full grid-cols-7">
+                <TabsTrigger value="templates">
+                  <LayoutTemplate className="mr-2 h-4 w-4" />
+                  Templates
+                </TabsTrigger>
                 <TabsTrigger value="personal">
                   <User className="mr-2 h-4 w-4" />
                   Personal
@@ -297,10 +301,6 @@ export function ResumeBuilderClient() {
                  <TabsTrigger value="enhance">
                   <Wand2 className="mr-2 h-4 w-4" />
                   Enhance
-                </TabsTrigger>
-                <TabsTrigger value="templates">
-                  <LayoutTemplate className="mr-2 h-4 w-4" />
-                  Templates
                 </TabsTrigger>
               </TabsList>
 
