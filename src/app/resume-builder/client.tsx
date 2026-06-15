@@ -748,7 +748,7 @@ export function ResumeBuilderClient() {
                                       src={template.src}
                                       alt={template.name}
                                       fill
-                                      className="object-cover"
+                                      className="object-contain"
                                       quality={100}
                                       unoptimized={true}
                                     />
