@@ -273,32 +273,32 @@ export function ResumeBuilderClient() {
             className="space-y-8"
           >
             <Tabs defaultValue="templates" className="w-full">
-              <TabsList className="grid w-full grid-cols-7">
-                <TabsTrigger value="templates">
+              <TabsList className="flex w-full flex-wrap h-auto gap-2 justify-start md:grid md:grid-cols-7">
+                <TabsTrigger value="templates" className="flex-1 md:flex-auto">
                   <LayoutTemplate className="mr-2 h-4 w-4" />
                   Templates
                 </TabsTrigger>
-                <TabsTrigger value="personal">
+                <TabsTrigger value="personal" className="flex-1 md:flex-auto">
                   <User className="mr-2 h-4 w-4" />
                   Personal
                 </TabsTrigger>
-                <TabsTrigger value="experience">
+                <TabsTrigger value="experience" className="flex-1 md:flex-auto">
                   <Briefcase className="mr-2 h-4 w-4" />
                   Experience
                 </TabsTrigger>
-                <TabsTrigger value="education">
+                <TabsTrigger value="education" className="flex-1 md:flex-auto">
                   <GraduationCap className="mr-2 h-4 w-4" />
                   Education
                 </TabsTrigger>
-                <TabsTrigger value="projects">
+                <TabsTrigger value="projects" className="flex-1 md:flex-auto">
                   <Code className="mr-2 h-4 w-4" />
                   Projects
                 </TabsTrigger>
-                <TabsTrigger value="skills">
+                <TabsTrigger value="skills" className="flex-1 md:flex-auto">
                   <Code className="mr-2 h-4 w-4" />
                   Skills
                 </TabsTrigger>
-                 <TabsTrigger value="enhance">
+                 <TabsTrigger value="enhance" className="flex-1 md:flex-auto">
                   <Wand2 className="mr-2 h-4 w-4" />
                   Enhance
                 </TabsTrigger>
@@ -731,7 +731,7 @@ export function ResumeBuilderClient() {
                           <RadioGroup
                             onValueChange={field.onChange}
                             defaultValue={field.value}
-                            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+                            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
                           >
                             {AVAILABLE_TEMPLATES.map((template) => (
                               <FormItem key={template.id} className="relative cursor-pointer">
