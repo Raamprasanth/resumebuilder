@@ -750,6 +750,7 @@ export function ResumeBuilderClient() {
                                       fill
                                       className="object-cover"
                                       quality={100}
+                                      unoptimized={true}
                                     />
                                   </div>
                                   <span className="font-semibold text-sm mb-1">{template.name}</span>
