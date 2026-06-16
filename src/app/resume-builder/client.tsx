@@ -322,7 +322,7 @@ export function ResumeBuilderClient() {
                             {AVAILABLE_TEMPLATES.map((template) => (
                               <FormItem key={template.id} className="relative cursor-pointer">
                                 <FormControl>
-                                  <RadioGroupItem value={template.id} className="peer sr-only" />
+                                  <RadioGroupItem id={template.id} value={template.id} className="peer sr-only" />
                                 </FormControl>
                                 <Label
                                   htmlFor={template.id}
