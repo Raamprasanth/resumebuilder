@@ -8,19 +8,9 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
-import {
-  ExperienceSchema,
-  EducationSchema,
-} from '@/ai/schemas/resume-generation';
 
 const EnhanceResumeInputSchema = z.object({
-  fullName: z.string(),
-  email: z.string(),
-  phone: z.string(),
-  summary: z.string(),
-  experiences: z.array(ExperienceSchema),
-  education: z.array(EducationSchema),
-  skills: z.string(),
+  htmlContent: z.string(),
   enhancementInstructions: z
     .string()
     .describe(
@@ -29,17 +19,10 @@ const EnhanceResumeInputSchema = z.object({
 });
 export type EnhanceResumeInput = z.infer<typeof EnhanceResumeInputSchema>;
 
-const EnhancedExperienceSchema = ExperienceSchema.extend({
-  jobDescription: z.string().describe("The rewritten, enhanced job description, using professional language and action verbs. Should be a single string with bullet points prefixed by '• '.")
-});
-
 const EnhanceResumeOutputSchema = z.object({
-  summary: z
+  enhancedHtmlContent: z
     .string()
-    .describe('The rewritten, enhanced professional summary.'),
-  experiences: z
-    .array(EnhancedExperienceSchema)
-    .describe('The list of experiences with enhanced descriptions.'),
+    .describe('The rewritten, enhanced HTML content.'),
 });
 export type EnhanceResumeOutput = z.infer<typeof EnhanceResumeOutputSchema>;
 
@@ -62,26 +45,19 @@ const prompt = ai.definePrompt({
 {{{enhancementInstructions}}}
 ---
 
-**User's Current Resume Data:**
-- Name: {{{fullName}}}
-- Summary: {{{summary}}}
-- Experience:
-{{#each experiences}}
-  - Job Title: {{this.jobTitle}}
-    Company: {{this.company}}
-    Description: {{this.jobDescription}}
-{{/each}}
-- Skills: {{{skills}}}
+**User's Current Resume HTML:**
+---
+{{{htmlContent}}}
+---
 
 **Your Task:**
-1.  **Rewrite the Professional Summary:** Make it concise, powerful, and aligned with the user's instructions.
-2.  **Enhance Job Descriptions:** For each experience, rewrite the description. Focus on:
-    - Using strong action verbs.
-    - Quantifying achievements with metrics where possible (if not available, focus on the impact).
-    - Ensuring the language is professional and ATS-friendly.
-    - Formatting each description as a single string, with bullet points starting with '• '.
+1.  Read the current HTML content of the resume.
+2.  Enhance the textual content (Summary, Experience, Projects, Skills) based on the user's instructions.
+3.  Rewrite job descriptions to use strong action verbs and quantify achievements with metrics where possible.
+4.  Ensure the language is professional and ATS-friendly.
+5.  **CRITICAL**: Return the EXACT same HTML structure. Do not remove or alter any HTML tags, classes, or IDs. ONLY rewrite the text content within the tags.
 
-Return a JSON object with the enhanced 'summary' and 'experiences'. Do not change the job titles, companies, or dates.`,
+Return a JSON object with the \`enhancedHtmlContent\`.`,
   config: {
     temperature: 0.5,
   },
